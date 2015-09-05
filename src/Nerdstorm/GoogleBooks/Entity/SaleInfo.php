@@ -58,6 +58,13 @@ class SaleInfo
     protected $buy_link;
 
     /**
+     * The date on which this book is available for sale.
+     *
+     * @var \DateTime
+     */
+    protected $on_sale_date;
+
+    /**
      * @return string
      */
     public function getCountry()
@@ -173,6 +180,26 @@ class SaleInfo
     public function setBuyLink($buy_link)
     {
         $this->buy_link = $buy_link;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getOnSaleDate()
+    {
+        return $this->on_sale_date;
+    }
+
+    /**
+     * @param \DateTime $on_sale_date
+     *
+     * @return SaleInfo
+     */
+    public function setOnSaleDate($on_sale_date)
+    {
+        $this->on_sale_date = $on_sale_date;
 
         return $this;
     }
