@@ -7,7 +7,8 @@ namespace Nerdstorm\GoogleBooks\Entity;
  *
  * General volume information.
  */
-class VolumeInfo {
+class VolumeInfo
+{
 
     /**
      * Volume title. (In LITE projection.)

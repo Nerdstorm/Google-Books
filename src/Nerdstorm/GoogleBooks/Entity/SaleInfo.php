@@ -5,11 +5,13 @@ namespace Nerdstorm\GoogleBooks\Entity;
 use Nerdstorm\GoogleBooks\Enum\SaleabilityEnum;
 
 /**
- * Class VolumeInfo
+ * Class SaleInfo
  *
- * General volume information.
+ * Any information about a volume related to the eBookstore and/or purchaseability.
+ * This information can depend on the country where the request
+ * originates from (i.e. books may not be for sale in certain countries).
  */
-class VolumeInfo
+class SaleInfo
 {
     /**
      * The two-letter ISO_3166-1 country code for which this sale information is valid.
@@ -66,7 +68,7 @@ class VolumeInfo
     /**
      * @param string $country
      *
-     * @return VolumeInfo
+     * @return SaleInfo
      */
     public function setCountry($country)
     {
@@ -86,7 +88,7 @@ class VolumeInfo
     /**
      * @param SaleabilityEnum $saleability
      *
-     * @return VolumeInfo
+     * @return SaleInfo
      */
     public function setSaleability($saleability)
     {
@@ -98,7 +100,7 @@ class VolumeInfo
     /**
      * @return boolean
      */
-    public function isIsBook()
+    public function isBook()
     {
         return $this->is_book;
     }
@@ -106,7 +108,7 @@ class VolumeInfo
     /**
      * @param boolean $is_book
      *
-     * @return VolumeInfo
+     * @return SaleInfo
      */
     public function setIsBook($is_book)
     {
@@ -126,7 +128,7 @@ class VolumeInfo
     /**
      * @param BookPrice $list_price
      *
-     * @return VolumeInfo
+     * @return SaleInfo
      */
     public function setListPrice($list_price)
     {
@@ -146,7 +148,7 @@ class VolumeInfo
     /**
      * @param BookPrice $retail_price
      *
-     * @return VolumeInfo
+     * @return SaleInfo
      */
     public function setRetailPrice($retail_price)
     {
@@ -166,7 +168,7 @@ class VolumeInfo
     /**
      * @param string $buy_link
      *
-     * @return VolumeInfo
+     * @return SaleInfo
      */
     public function setBuyLink($buy_link)
     {
