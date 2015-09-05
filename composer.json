@@ -1,0 +1,26 @@
+{
+    "name": "nerdstorm/google-books-api",
+    "type": "library",
+    "description": "A wrapper for Google Books API",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Purinda Gunasekara",
+            "email": "purinda@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "": ["src/"]
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "": ["tests/"]
+        }
+    },
+    "require": {
+        "guzzlehttp/guzzle": "~6.0",
+        "eloquent/enumeration": "^5.1"
+    }
+}
