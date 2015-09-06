@@ -9,7 +9,6 @@ use Eloquent\Enumeration\AbstractEnumeration;
  *
  * Whether or not this book is available for sale or offered for free in the Google eBookstore
  * for the country listed above. Possible values are FOR_SALE, FREE, NOT_FOR_SALE, or FOR_PREORDER.
- *
  */
 final class SaleabilityEnum extends AbstractEnumeration
 {
