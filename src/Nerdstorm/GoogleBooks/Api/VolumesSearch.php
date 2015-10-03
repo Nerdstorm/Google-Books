@@ -62,7 +62,7 @@ class VolumesSearch extends BooksBase
      * You can use the API to get the volume ID by making a request that returns a Volume resource; you can find the
      * volume ID in its id field.
      *
-     * @param                $volume_id
+     * @param string         $volume_id
      * @param string         $partner
      * @param ProjectionEnum $projection
      * @param string         $source

@@ -2,7 +2,10 @@
 
 namespace Nerdstorm\GoogleBooks\Api;
 
-abstract class BooksBase
+use GuzzleHttp\Client;
+use Psr\Http\Message\ResponseInterface;
+
+abstract class SearchBase
 {
     /**
      * Google Books API endpoint
@@ -20,6 +23,13 @@ abstract class BooksBase
      * @var string
      */
     protected $api_key = null;
+
+    /**
+     * Guzzle Http client object
+     *
+     * @var Client
+     */
+    protected $client = null;
 
     /**
      * Gets the API application key.
@@ -49,16 +59,20 @@ abstract class BooksBase
      * Call Google API endpoint using the parameters and method supplied.
      *
      * @param  string $method
-     * @param  array  $params
-     * @return string
+     * @param  array  $query
+     *
+     * @return ResponseInterface
      */
-    protected function send($method, array $params)
+    protected function send($method, array $query)
     {
-        $get_url = self::ENDPOINT . "?method=$method";
-        $encoded_url_params = http_build_query(array_map('urlencode', $params));
+        $params = [];
+        if (null === $this->client) {
+            $params['base_uri'] = self::ENDPOINT . self::VERSION;
+            $this->client       = new Client($params);
+        }
 
-        $json_response = file_get_contents($get_url . '&' . $encoded_url_params);
-        return $json_response;
+        $response = call_user_func([$this->client, $method], $query);
+        return $response;
     }
 
 }
