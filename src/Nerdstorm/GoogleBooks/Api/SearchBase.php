@@ -59,19 +59,31 @@ abstract class SearchBase
      * Call Google API endpoint using the parameters and method supplied.
      *
      * @param  string $method
+     * @param  string $api_func
      * @param  array  $query
      *
      * @return ResponseInterface
      */
-    protected function send($method, array $query)
+    protected function send($method, $api_func, array $query)
     {
         $params = [];
-        if (null === $this->client) {
-            $params['base_uri'] = self::ENDPOINT . self::VERSION;
-            $this->client       = new Client($params);
+
+        $accepted_methods = [
+            'GET',
+            'POST',
+        ];
+
+        if (!in_array(strtoupper($method), $accepted_methods)) {
+            throw new \InvalidArgumentException('HTTP method is not valid for Google Books search endpoints.');
         }
 
-        $response = call_user_func([$this->client, $method], $query);
+        if (null === $this->client) {
+            $params['base_uri'] = self::ENDPOINT . self::VERSION;
+            $this->client = new Client($params);
+        }
+
+        $response = call_user_func([$this->client, $method], $api_func, $query);
+
         return $response;
     }
 
