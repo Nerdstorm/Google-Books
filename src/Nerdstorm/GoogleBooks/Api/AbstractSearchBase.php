@@ -5,7 +5,7 @@ namespace Nerdstorm\GoogleBooks\Api;
 use GuzzleHttp\Client;
 use Psr\Http\Message\ResponseInterface;
 
-abstract class SearchBase
+abstract class AbstractSearchBase
 {
     /**
      * Google Books API endpoint

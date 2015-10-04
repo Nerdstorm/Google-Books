@@ -6,7 +6,7 @@ use Nerdstorm\GoogleBooks\Entity\Volume;
 use Nerdstorm\GoogleBooks\Entity\Volumes;
 use Nerdstorm\GoogleBooks\Enum\ProjectionEnum;
 
-class VolumesSearch extends SearchBase
+class VolumesSearch extends AbstractSearchBase
 {
 
     /**
