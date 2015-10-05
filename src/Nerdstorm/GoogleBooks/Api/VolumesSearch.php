@@ -2,6 +2,7 @@
 
 namespace Nerdstorm\GoogleBooks\Api;
 
+use GuzzleHttp\Exception\RequestException;
 use Nerdstorm\GoogleBooks\Entity\Volume;
 use Nerdstorm\GoogleBooks\Entity\Volumes;
 use Nerdstorm\GoogleBooks\Enum\ProjectionEnum;
@@ -53,13 +54,15 @@ class VolumesSearch extends AbstractSearchBase
         ProjectionEnum $projection = null, $show_preorders = false, $source = null,
         $start_index = null)
     {
-        $api_method = 'volumes';
+        $api_method = 'volumes/';
 
         $response = $this->send(
-            'GET',
+            'get',
             $api_method,
             [
-                'q' => 'systems analysis and design'
+                'query' => [
+                    'q' => $q,
+                ],
             ]
         );
 

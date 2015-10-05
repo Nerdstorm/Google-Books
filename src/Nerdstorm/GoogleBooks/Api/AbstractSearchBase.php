@@ -18,13 +18,6 @@ abstract class AbstractSearchBase
     const VERSION = 'v1';
 
     /**
-     * API key received from Google
-     *
-     * @var string
-     */
-    protected $api_key = null;
-
-    /**
      * Guzzle Http client object
      *
      * @var Client
@@ -32,27 +25,26 @@ abstract class AbstractSearchBase
     protected $client = null;
 
     /**
-     * Gets the API application key.
-     *
-     * @return string
+     * Guzzle Client default configuration
+     * @var array
      */
-    public function getApiKey()
-    {
-        return $this->api_key;
-    }
+    protected $client_config = [];
 
     /**
-     * Sets the API application key.
-     *
-     * @param string $api_key the api key
-     *
-     * @return self
+     * @param       $api_key
+     * @param array $config
      */
-    public function setApiKey($api_key)
+    public function __construct($api_key, array $config = [])
     {
-        $this->_api_key = $api_key;
+        $config['base_uri'] = self::ENDPOINT . self::VERSION . '/';
 
-        return $this;
+        // Default query parameters for requests
+        $this->client_config['defaults']['query'] = [
+            'key' => $api_key
+        ];
+
+        // Override config values
+        $this->client_config += $config;
     }
 
     /**
@@ -66,20 +58,18 @@ abstract class AbstractSearchBase
      */
     protected function send($method, $api_func, array $query)
     {
-        $params = [];
-
+        // Google Books API supported methods
         $accepted_methods = [
             'GET',
             'POST',
         ];
 
-        if (!in_array(strtoupper($method), $accepted_methods)) {
-            throw new \InvalidArgumentException('HTTP method is not valid for Google Books search endpoints.');
+        if (null == $this->client) {
+            $this->client = new Client($this->client_config);
         }
 
-        if (null === $this->client) {
-            $params['base_uri'] = self::ENDPOINT . self::VERSION;
-            $this->client = new Client($params);
+        if (!in_array(strtoupper($method), $accepted_methods)) {
+            throw new \InvalidArgumentException('HTTP method is not valid for Google Books search endpoints.');
         }
 
         $response = call_user_func([$this->client, $method], $api_func, $query);
