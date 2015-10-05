@@ -19,7 +19,7 @@ class VolumeSearchTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function testVolumeList()
+    public function testVolumesList()
     {
         /** @var Response $response */
         $response = $this->volume_search->volumesList('Systems analysis and design');
@@ -36,5 +36,11 @@ class VolumeSearchTest extends \PHPUnit_Framework_TestCase
         } else {
             $this->assertCount($data['totalItems'], $data['items']);
         }
+    }
+
+
+    public function testVolumeGet()
+    {
+
     }
 }
