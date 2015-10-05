@@ -23,6 +23,18 @@ class VolumeSearchTest extends \PHPUnit_Framework_TestCase
     {
         /** @var Response $response */
         $response = $this->volume_search->volumesList('Systems analysis and design');
-        $response->getBody()->getContents();
+
+        $json = (string) $response->getBody();
+        $data = json_decode($json, true);
+
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('application/json; charset=UTF-8', $response->getHeader('Content-Type')[0]);
+        $this->assertEquals($data['kind'], 'books#volumes');
+        if ($data['totalItems'] >= 10) {
+            $this->assertCount(10, $data['items']);
+        } else {
+            $this->assertCount($data['totalItems'], $data['items']);
+        }
     }
 }
