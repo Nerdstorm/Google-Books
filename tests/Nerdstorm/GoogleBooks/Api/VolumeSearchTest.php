@@ -19,7 +19,7 @@ class VolumeSearchTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function testVolumesList()
+    public function testVolumesListSimpleQuery()
     {
         /** @var Response $response */
         $response = $this->volume_search->volumesList('Systems analysis and design');

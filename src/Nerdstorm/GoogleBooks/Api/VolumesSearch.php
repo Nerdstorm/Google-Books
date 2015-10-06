@@ -23,13 +23,10 @@ class VolumesSearch extends AbstractSearchBase
      *                                           "full" - Public can view entire volume text.
      *                                           "paid-ebooks" - Google eBook with a price.
      *                                           "partial" - Public able to see parts of text.
-     * @param string           $lang_restrict    Restrict results to books with this language code.
-     * @param string           $library_restrict Restrict search to this user's library.
-     *                                           Acceptable values are:
-     *                                           "my-library" - Restrict to the user's library, any shelf.
-     *                                           "no-restrict" - Do not restrict based on user's library.
+     * @param string           $lang_restrict    Restrict results to books with this language code. ISO-639-1 code.
+     * @param int              $start_index      Index of the first result to return (starts at 0)
      * @param int              $max_results      Maximum number of results to return. Acceptable values are 0 to 40,
-     *                                           inclusive.
+     *                                           inclusive. Default is 10.
      * @param string           $order_by         Sort search results.
      *                                           Acceptable values are:
      *                                           "newest" - Most recently published.
@@ -46,16 +43,13 @@ class VolumesSearch extends AbstractSearchBase
      *                                           "lite" - Includes a subset of fields in volumeInfo and accessInfo.
      * @param bool             $show_preorders   Set to true to show books available for preorder. Defaults to false.
      * @param string           $source           String to identify the originator of this request.
-     * @param int              $start_index      Index of the first result to return (starts at 0)
      *
      * @throws InvalidQueryException
      * @return Volumes
      */
     public function volumesList($q, $download = false, VolumeFilterEnum $filter = null, $lang_restrict = null,
-        $library_restrict = null,
-        $max_results = null, $order_by = null, $partner = null, $print_type = null,
-        ProjectionEnum $projection = null, $show_preorders = false, $source = null,
-        $start_index = null)
+        $start_index = 0, $max_results = 10, $order_by = null, $partner = null, $print_type = null,
+        ProjectionEnum $projection = null, $show_preorders = false, $source = null)
     {
         $api_method = 'volumes/';
         $query = [];
@@ -72,9 +66,32 @@ class VolumesSearch extends AbstractSearchBase
         }
 
         // Filter types of volumes
-        if () {
-            return $this->send('get', $api_method, ['query' => $query]);
+        if ($filter instanceof VolumeFilterEnum) {
+            $query['filter'] = $filter->value();
         }
+
+        // ISO-639-1 specification require language code to be in 2-character presentation
+        if (strlen($lang_restrict) == 2) {
+            $query['langRestrict'] = $lang_restrict;
+        } elseif (null !== $lang_restrict) {
+            throw new InalidLanguageRestrictionException('Language restriction has to be in ISO-639-1 standard.');
+        }
+
+        if ($max_results < 0 or $max_results > 40) {
+            throw new InvalidArgumentOutOfBoundsException('Max results has to be a value between 0 and 40');
+        } else {
+            $query['maxResults'] = $max_results;
+        }
+
+        if ($start_index < 0) {
+            throw new InvalidArgumentOutOfBoundsException('Start index cannot be a negative number');
+        } else {
+            $query['start_index'] = $start_index;
+        }
+
+
+
+        return $this->send('get', $api_method, ['query' => $query]);
     }
 
     /**
