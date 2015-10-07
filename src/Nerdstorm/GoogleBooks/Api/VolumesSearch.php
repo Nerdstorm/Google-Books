@@ -4,8 +4,11 @@ namespace Nerdstorm\GoogleBooks\Api;
 
 use Nerdstorm\GoogleBooks\Entity\Volume;
 use Nerdstorm\GoogleBooks\Entity\Volumes;
+use Nerdstorm\GoogleBooks\Enum\OrderByEnum;
 use Nerdstorm\GoogleBooks\Enum\ProjectionEnum;
+use Nerdstorm\GoogleBooks\Enum\PublicationTypeEnum;
 use Nerdstorm\GoogleBooks\Enum\VolumeFilterEnum;
+use Nerdstorm\GoogleBooks\Exception\ArgumentOutOfBoundsException;
 use Nerdstorm\GoogleBooks\Exception\InvalidQueryException;
 
 class VolumesSearch extends AbstractSearchBase
@@ -14,42 +17,41 @@ class VolumesSearch extends AbstractSearchBase
     /**
      * Performs a book search.
      *
-     * @param string           $q                Full-text search query string
-     * @param bool             $download         Restrict to volumes by download availability.
-     * @param VolumeFilterEnum $filter           Filter search results.
-     *                                           Acceptable values are:
-     *                                           "ebooks" - All Google eBooks.
-     *                                           "free-ebooks" - Google eBook with full volume text viewability.
-     *                                           "full" - Public can view entire volume text.
-     *                                           "paid-ebooks" - Google eBook with a price.
-     *                                           "partial" - Public able to see parts of text.
-     * @param string           $lang_restrict    Restrict results to books with this language code. ISO-639-1 code.
-     * @param int              $start_index      Index of the first result to return (starts at 0)
-     * @param int              $max_results      Maximum number of results to return. Acceptable values are 0 to 40,
-     *                                           inclusive. Default is 10.
-     * @param string           $order_by         Sort search results.
-     *                                           Acceptable values are:
-     *                                           "newest" - Most recently published.
-     *                                           "relevance" - Relevance to search terms.
-     * @param string           $partner          Restrict and brand results for partner ID.
-     * @param string           $print_type       Restrict to books or magazines.
-     *                                           Acceptable values are:
-     *                                           "all" - All volume content types.
-     *                                           "books" - Just books.
-     *                                           "magazines" - Just magazines.
-     * @param ProjectionEnum   $projection       Restrict information returned to a set of selected fields.
-     *                                           Acceptable values are:
-     *                                           "full" - Includes all volume data.
-     *                                           "lite" - Includes a subset of fields in volumeInfo and accessInfo.
-     * @param bool             $show_preorders   Set to true to show books available for preorder. Defaults to false.
-     * @param string           $source           String to identify the originator of this request.
+     * @param string              $q              Full-text search query string
+     * @param bool                $download       Restrict to volumes by download availability.
+     * @param VolumeFilterEnum    $filter         Filter search results.
+     *                                            Acceptable values are:
+     *                                            "ebooks" - All Google eBooks.
+     *                                            "free-ebooks" - Google eBook with full volume text viewability.
+     *                                            "full" - Public can view entire volume text.
+     *                                            "paid-ebooks" - Google eBook with a price.
+     *                                            "partial" - Public able to see parts of text.
+     * @param string              $lang_restrict  Restrict results to books with this language code. ISO-639-1 code.
+     * @param int                 $start_index    Index of the first result to return (starts at 0)
+     * @param int                 $max_results    Maximum number of results to return. Acceptable values are 0 to 40,
+     *                                            inclusive. Default is 10.
+     * @param OrderByEnum         $order_by       Sort search results.
+     *                                            Acceptable values are:
+     *                                            "newest" - Most recently published.
+     *                                            "relevance" - Relevance to search terms.
+     * @param PublicationTypeEnum $print_type     Restrict to books or magazines.
+     *                                            Acceptable values are:
+     *                                            "all" - All volume content types.
+     *                                            "books" - Just books.
+     *                                            "magazines" - Just magazines.
+     * @param ProjectionEnum      $projection     Restrict information returned to a set of selected fields.
+     *                                            Acceptable values are:
+     *                                            "full" - Includes all volume data.
+     *                                            "lite" - Includes a subset of fields in volumeInfo and accessInfo.
+     * @param bool                $show_preorders Set to true to show books available for preorder. Defaults to false.
      *
      * @throws InvalidQueryException
      * @return Volumes
      */
     public function volumesList($q, $download = false, VolumeFilterEnum $filter = null, $lang_restrict = null,
-        $start_index = 0, $max_results = 10, $order_by = null, $partner = null, $print_type = null,
-        ProjectionEnum $projection = null, $show_preorders = false, $source = null)
+        $start_index = 0, $max_results = 10, OrderByEnum $order_by = OrderByEnum::RELEVANCE,
+        PublicationTypeEnum $print_type = PublicationTypeEnum::ALL, ProjectionEnum $projection = ProjectionEnum::FULL,
+        $show_preorders = false)
     {
         $api_method = 'volumes/';
         $query = [];
@@ -74,22 +76,22 @@ class VolumesSearch extends AbstractSearchBase
         if (strlen($lang_restrict) == 2) {
             $query['langRestrict'] = $lang_restrict;
         } elseif (null !== $lang_restrict) {
-            throw new InalidLanguageRestrictionException('Language restriction has to be in ISO-639-1 standard.');
+            throw new ArgumentOutOfBoundsException('Language restriction has to be in ISO-639-1 standard.');
         }
 
+        // Number of volume matches to return in a single response
         if ($max_results < 0 or $max_results > 40) {
-            throw new InvalidArgumentOutOfBoundsException('Max results has to be a value between 0 and 40');
+            throw new ArgumentOutOfBoundsException('Max results has to be a value between 0 and 40');
         } else {
             $query['maxResults'] = $max_results;
         }
 
+        // Start index (cursor) for results
         if ($start_index < 0) {
-            throw new InvalidArgumentOutOfBoundsException('Start index cannot be a negative number');
+            throw new ArgumentOutOfBoundsException('Start index cannot be a negative number');
         } else {
             $query['start_index'] = $start_index;
         }
-
-
 
         return $this->send('get', $api_method, ['query' => $query]);
     }
