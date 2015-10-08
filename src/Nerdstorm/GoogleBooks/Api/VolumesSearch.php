@@ -43,15 +43,12 @@ class VolumesSearch extends AbstractSearchBase
      *                                            Acceptable values are:
      *                                            "full" - Includes all volume data.
      *                                            "lite" - Includes a subset of fields in volumeInfo and accessInfo.
-     * @param bool                $show_preorders Set to true to show books available for preorder. Defaults to false.
-     *
      * @throws InvalidQueryException
      * @return Volumes
      */
     public function volumesList($q, $download = false, VolumeFilterEnum $filter = null, $lang_restrict = null,
         $start_index = 0, $max_results = 10, OrderByEnum $order_by = OrderByEnum::RELEVANCE,
-        PublicationTypeEnum $print_type = PublicationTypeEnum::ALL, ProjectionEnum $projection = ProjectionEnum::FULL,
-        $show_preorders = false)
+        PublicationTypeEnum $print_type = PublicationTypeEnum::ALL, ProjectionEnum $projection = ProjectionEnum::FULL)
     {
         $api_method = 'volumes/';
         $query = [];
@@ -85,6 +82,15 @@ class VolumesSearch extends AbstractSearchBase
         } else {
             $query['maxResults'] = $max_results;
         }
+
+        // Ordering of results
+        $query['orderBy'] = $order_by->value();
+
+        // Publication / Print type
+        $query['printType'] = $print_type->value();
+
+        // Projection
+        $query['projection'] = $projection->value();
 
         // Start index (cursor) for results
         if ($start_index < 0) {
