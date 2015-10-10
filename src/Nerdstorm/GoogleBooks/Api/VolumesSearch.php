@@ -9,7 +9,7 @@ use Nerdstorm\GoogleBooks\Enum\ProjectionEnum;
 use Nerdstorm\GoogleBooks\Enum\PublicationTypeEnum;
 use Nerdstorm\GoogleBooks\Enum\VolumeFilterEnum;
 use Nerdstorm\GoogleBooks\Exception\ArgumentOutOfBoundsException;
-use Nerdstorm\GoogleBooks\Exception\InvalidQueryException;
+use Nerdstorm\GoogleBooks\Query\VolumeSearchQuery;
 
 class VolumesSearch extends AbstractSearchBase
 {
@@ -17,7 +17,7 @@ class VolumesSearch extends AbstractSearchBase
     /**
      * Performs a book search.
      *
-     * @param string              $q              Full-text search query string
+     * @param VolumeSearchQuery   $q              Full-text Search query object
      * @param bool                $download       Restrict to volumes by download availability.
      * @param VolumeFilterEnum    $filter         Filter search results.
      *                                            Acceptable values are:
@@ -43,21 +43,17 @@ class VolumesSearch extends AbstractSearchBase
      *                                            Acceptable values are:
      *                                            "full" - Includes all volume data.
      *                                            "lite" - Includes a subset of fields in volumeInfo and accessInfo.
-     * @throws InvalidQueryException
+     *
      * @return Volumes
      */
-    public function volumesList($q, $download = false, VolumeFilterEnum $filter = null, $lang_restrict = null,
+    public function volumesList(VolumeSearchQuery $q, $download = false, VolumeFilterEnum $filter = null,
+        $lang_restrict = null,
         $start_index = 0, $max_results = 10, OrderByEnum $order_by = OrderByEnum::RELEVANCE,
         PublicationTypeEnum $print_type = PublicationTypeEnum::ALL, ProjectionEnum $projection = ProjectionEnum::FULL)
     {
         $api_method = 'volumes/';
         $query = [];
-
-        if ($q) {
-            $query['q'] = $q;
-        } else {
-            throw new InvalidQueryException();
-        }
+        $query['q'] = (string) $q;
 
         // Google Books API only filters based on downloadable epub content.
         if (true === $download) {
