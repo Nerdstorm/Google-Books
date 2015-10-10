@@ -4,6 +4,7 @@ namespace tests\Nerdstorm\GoogleBooks\Api;
 
 use GuzzleHttp\Psr7\Response;
 use Nerdstorm\GoogleBooks\Api\VolumesSearch;
+use Nerdstorm\GoogleBooks\Query\VolumeSearchQuery;
 use tests\Nerdstorm\Config;
 
 class VolumeSearchTest extends \PHPUnit_Framework_TestCase
@@ -23,8 +24,11 @@ class VolumeSearchTest extends \PHPUnit_Framework_TestCase
 
     public function testVolumesListSimpleQuery()
     {
+        /** @var Query $query */
+        $query = new VolumeSearchQuery(self::SEARCH_QUERY);
+
         /** @var Response $response */
-        $response = $this->volume_search->volumesList(self::SEARCH_QUERY);
+        $response = $this->volume_search->volumesList($query);
 
         $json = (string) $response->getBody();
         $data = json_decode($json, true);
@@ -42,8 +46,11 @@ class VolumeSearchTest extends \PHPUnit_Framework_TestCase
 
     public function testVolumesListFilterQuery()
     {
+        /** @var Query $query */
+        $query = new VolumeSearchQuery(self::SEARCH_QUERY);
+
         /** @var Response $response */
-        $response = $this->volume_search->volumesList(self::SEARCH_QUERY);
+        $response = $this->volume_search->volumesList($query);
 
         $json = (string) $response->getBody();
         $data = json_decode($json, true);

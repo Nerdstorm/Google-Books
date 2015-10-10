@@ -9,7 +9,7 @@ use Nerdstorm\GoogleBooks\Enum\ProjectionEnum;
 use Nerdstorm\GoogleBooks\Enum\PublicationTypeEnum;
 use Nerdstorm\GoogleBooks\Enum\VolumeFilterEnum;
 use Nerdstorm\GoogleBooks\Exception\ArgumentOutOfBoundsException;
-use Nerdstorm\GoogleBooks\Query\VolumeSearchQuery;
+use Nerdstorm\GoogleBooks\Query\QueryInterface;
 
 class VolumesSearch extends AbstractSearchBase
 {
@@ -17,7 +17,7 @@ class VolumesSearch extends AbstractSearchBase
     /**
      * Performs a book search.
      *
-     * @param VolumeSearchQuery   $q              Full-text Search query object
+     * @param QueryInterface      $q              Full-text Search query object
      * @param bool                $download       Restrict to volumes by download availability.
      * @param VolumeFilterEnum    $filter         Filter search results.
      *                                            Acceptable values are:
@@ -46,10 +46,9 @@ class VolumesSearch extends AbstractSearchBase
      *
      * @return Volumes
      */
-    public function volumesList(VolumeSearchQuery $q, $download = false, VolumeFilterEnum $filter = null,
-        $lang_restrict = null,
-        $start_index = 0, $max_results = 10, OrderByEnum $order_by = OrderByEnum::RELEVANCE,
-        PublicationTypeEnum $print_type = PublicationTypeEnum::ALL, ProjectionEnum $projection = ProjectionEnum::FULL)
+    public function volumesList(QueryInterface $q, $download = false, VolumeFilterEnum $filter = null,
+        $lang_restrict = null, $start_index = 0, $max_results = 10, OrderByEnum $order_by = null,
+        PublicationTypeEnum $print_type = null, ProjectionEnum $projection = null)
     {
         $api_method = 'volumes/';
         $query = [];
@@ -80,13 +79,15 @@ class VolumesSearch extends AbstractSearchBase
         }
 
         // Ordering of results
-        $query['orderBy'] = $order_by->value();
+        $query['orderBy'] = null === $order_by ? OrderByEnum::RELEVANCE() : $order_by->value();
 
         // Publication / Print type
-        $query['printType'] = $print_type->value();
+        $query['printType'] = null === $print_type ? PublicationTypeEnum::ALL() : $print_type->value();
 
         // Projection
-        $query['projection'] = $projection->value();
+        if ($projection) {
+            $query['projection'] = $projection->value();
+        }
 
         // Start index (cursor) for results
         if ($start_index < 0) {
