@@ -79,10 +79,18 @@ class VolumesSearch extends AbstractSearchBase
         }
 
         // Ordering of results
-        $query['orderBy'] = null === $order_by ? OrderByEnum::RELEVANCE() : $order_by->value();
+        if (null === $order_by) {
+            $query['orderBy'] = OrderByEnum::RELEVANCE()->value();
+        } else {
+            $query['orderBy'] = $order_by->value();
+        }
 
         // Publication / Print type
-        $query['printType'] = null === $print_type ? PublicationTypeEnum::ALL() : $print_type->value();
+        if (null === $print_type) {
+            $query['printType'] = PublicationTypeEnum::ALL()->value();
+        } else {
+            $query['printType'] = $print_type->value();
+        }
 
         // Projection
         if ($projection) {

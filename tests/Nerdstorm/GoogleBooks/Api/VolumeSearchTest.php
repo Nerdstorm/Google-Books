@@ -4,6 +4,7 @@ namespace tests\Nerdstorm\GoogleBooks\Api;
 
 use GuzzleHttp\Psr7\Response;
 use Nerdstorm\GoogleBooks\Api\VolumesSearch;
+use Nerdstorm\GoogleBooks\Enum\VolumeFilterEnum;
 use Nerdstorm\GoogleBooks\Query\VolumeSearchQuery;
 use tests\Nerdstorm\Config;
 
@@ -44,26 +45,29 @@ class VolumeSearchTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function testVolumesListFilterQuery()
+    public function testVolumesListDownloadableContent()
     {
         /** @var Query $query */
         $query = new VolumeSearchQuery(self::SEARCH_QUERY);
 
         /** @var Response $response */
-        $response = $this->volume_search->volumesList($query);
+        $response = $this->volume_search->volumesList($query, true, VolumeFilterEnum::FREE_EBOOKS());
 
         $json = (string) $response->getBody();
         $data = json_decode($json, true);
 
-
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals('application/json; charset=UTF-8', $response->getHeader('Content-Type')[0]);
-        $this->assertEquals($data['kind'], 'books#volumes');
-        if ($data['totalItems'] >= 10) {
-            $this->assertCount(10, $data['items']);
-        } else {
-            $this->assertCount($data['totalItems'], $data['items']);
+
+        $available_for_download = 0;
+        foreach ($data['items'] as $volume) {
+            if (true === $volume['accessInfo']['epub']['isAvailable']) {
+                $available_for_download++;
+            } elseif (true === $volume['accessInfo']['pdf']['isAvailable']) {
+                $available_for_download++;
+            }
         }
+
+        $this->assertCount($available_for_download, $data['items']);
     }
 
 }
