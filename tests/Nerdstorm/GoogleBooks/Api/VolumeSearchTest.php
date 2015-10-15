@@ -70,4 +70,37 @@ class VolumeSearchTest extends \PHPUnit_Framework_TestCase
         $this->assertCount($available_for_download, $data['items']);
     }
 
+    public function testVolumesListLanguageFiltering()
+    {
+        $lang_code = 'fr';
+
+        // Languages that should be included in search results
+        $accepted_langs = [
+            'fr' => 'fr',
+            'en' => 'en',
+        ];
+
+        // Languages that should not be included in search results
+        $unaccepted_langs = [
+            'ru' => 'ru',
+            'es' => 'es',
+        ];
+
+        /** @var Query $query */
+        $query = new VolumeSearchQuery('The Little Prince');
+
+        /** @var Response $response */
+        $response = $this->volume_search->volumesList($query, true, VolumeFilterEnum::FREE_EBOOKS(), $lang_code);
+
+        $json = (string) $response->getBody();
+        $data = json_decode($json, true);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        foreach ($data['items'] as $volume) {
+            $this->assertArrayHasKey($volume['volumeInfo']['language'], $accepted_langs);
+            $this->assertArrayNotHasKey($volume['volumeInfo']['language'], $unaccepted_langs);
+        }
+
+    }
+
 }
