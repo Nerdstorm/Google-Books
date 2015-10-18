@@ -5,6 +5,7 @@ namespace tests\Nerdstorm\GoogleBooks\Api;
 use GuzzleHttp\Psr7\Response;
 use Nerdstorm\GoogleBooks\Api\VolumesSearch;
 use Nerdstorm\GoogleBooks\Enum\OrderByEnum;
+use Nerdstorm\GoogleBooks\Enum\PublicationTypeEnum;
 use Nerdstorm\GoogleBooks\Enum\VolumeFilterEnum;
 use Nerdstorm\GoogleBooks\Query\VolumeSearchQuery;
 use tests\Nerdstorm\Config;
@@ -102,9 +103,6 @@ class VolumeSearchTest extends \PHPUnit_Framework_TestCase
 
     public function testVolumesListOrderByTest()
     {
-        $page_size = 20;
-        $start_index = 120;
-
         /** @var Query $query */
         $query = new VolumeSearchQuery('Flowers');
 
@@ -127,6 +125,40 @@ class VolumeSearchTest extends \PHPUnit_Framework_TestCase
 
         foreach ($ordered_dates as $index => $date) {
             $this->assertEquals($date, $publish_dates[$index]);
+        }
+    }
+
+    public function testVolumesListPrintTypeTest()
+    {
+        /** @var Query $query */
+        $query = new VolumeSearchQuery('Flowers');
+
+        /*
+         * Filter Books
+         */
+        /** @var Response $response */
+        $response = $this->volume_search->volumesList($query, false, null, null, 0, 10, null, PublicationTypeEnum::BOOKS());
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $json = (string) $response->getBody();
+        $data = json_decode($json, true);
+
+        foreach ($data['items'] as $volume) {
+            $this->assertEquals($volume['volumeInfo']['printType'], 'BOOK');
+        }
+
+        /*
+         * Filter Magazines
+         */
+        /** @var Response $response */
+        $response = $this->volume_search->volumesList($query, false, null, null, 0, 10, null, PublicationTypeEnum::MAGAZINES());
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $json = (string) $response->getBody();
+        $data = json_decode($json, true);
+
+        foreach ($data['items'] as $volume) {
+            $this->assertEquals($volume['volumeInfo']['printType'], 'MAGAZINE');
         }
 
     }
