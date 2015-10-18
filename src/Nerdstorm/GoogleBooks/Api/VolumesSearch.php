@@ -101,7 +101,7 @@ class VolumesSearch extends AbstractSearchBase
         if ($start_index < 0) {
             throw new ArgumentOutOfBoundsException('Start index cannot be a negative number');
         } else {
-            $query['start_index'] = $start_index;
+            $query['startIndex'] = (int) $start_index;
         }
 
         return $this->send('get', $api_method, ['query' => $query]);

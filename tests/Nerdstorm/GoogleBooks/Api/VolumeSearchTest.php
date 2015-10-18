@@ -4,6 +4,7 @@ namespace tests\Nerdstorm\GoogleBooks\Api;
 
 use GuzzleHttp\Psr7\Response;
 use Nerdstorm\GoogleBooks\Api\VolumesSearch;
+use Nerdstorm\GoogleBooks\Enum\OrderByEnum;
 use Nerdstorm\GoogleBooks\Enum\VolumeFilterEnum;
 use Nerdstorm\GoogleBooks\Query\VolumeSearchQuery;
 use tests\Nerdstorm\Config;
@@ -13,10 +14,9 @@ class VolumeSearchTest extends \PHPUnit_Framework_TestCase
     /** @var VolumeSearch */
     protected $volume_search;
 
-    const SEARCH_QUERY = 'Systems analysis and design';
-
     public function setup()
     {
+        /** @var VolumesSearch volume_search */
         $this->volume_search = new VolumesSearch(
             Config::API_KEY,
             Config::guzzleOpts()
@@ -26,16 +26,15 @@ class VolumeSearchTest extends \PHPUnit_Framework_TestCase
     public function testVolumesListSimpleQuery()
     {
         /** @var Query $query */
-        $query = new VolumeSearchQuery(self::SEARCH_QUERY);
+        $query = new VolumeSearchQuery('Systems analysis and design');
 
         /** @var Response $response */
         $response = $this->volume_search->volumesList($query);
+        $this->assertEquals(200, $response->getStatusCode());
 
         $json = (string) $response->getBody();
         $data = json_decode($json, true);
 
-
-        $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('application/json; charset=UTF-8', $response->getHeader('Content-Type')[0]);
         $this->assertEquals($data['kind'], 'books#volumes');
         if ($data['totalItems'] >= 10) {
@@ -48,15 +47,14 @@ class VolumeSearchTest extends \PHPUnit_Framework_TestCase
     public function testVolumesListDownloadableContent()
     {
         /** @var Query $query */
-        $query = new VolumeSearchQuery(self::SEARCH_QUERY);
+        $query = new VolumeSearchQuery('Systems analysis and design');
 
         /** @var Response $response */
         $response = $this->volume_search->volumesList($query, true, VolumeFilterEnum::FREE_EBOOKS());
+        $this->assertEquals(200, $response->getStatusCode());
 
         $json = (string) $response->getBody();
         $data = json_decode($json, true);
-
-        $this->assertEquals(200, $response->getStatusCode());
 
         $available_for_download = 0;
         foreach ($data['items'] as $volume) {
@@ -90,17 +88,46 @@ class VolumeSearchTest extends \PHPUnit_Framework_TestCase
         $query = new VolumeSearchQuery('The Little Prince');
 
         /** @var Response $response */
-        $response = $this->volume_search->volumesList($query, true, VolumeFilterEnum::FREE_EBOOKS(), $lang_code);
+        $response = $this->volume_search->volumesList($query, false, null, $lang_code);
+        $this->assertEquals(200, $response->getStatusCode());
 
         $json = (string) $response->getBody();
         $data = json_decode($json, true);
 
-        $this->assertEquals(200, $response->getStatusCode());
         foreach ($data['items'] as $volume) {
             $this->assertArrayHasKey($volume['volumeInfo']['language'], $accepted_langs);
             $this->assertArrayNotHasKey($volume['volumeInfo']['language'], $unaccepted_langs);
         }
-
     }
 
+    public function testVolumesListOrderByTest()
+    {
+        $page_size = 20;
+        $start_index = 120;
+
+        /** @var Query $query */
+        $query = new VolumeSearchQuery('Flowers');
+
+        /** @var Response $response */
+        $response = $this->volume_search->volumesList($query, true, null, null, 0, 10, OrderByEnum::NEWEST());
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $json = (string) $response->getBody();
+        $data = json_decode($json, true);
+
+        $publish_dates = [];
+        foreach ($data['items'] as $volume) {
+            $publish_dates[] = strtotime($volume['volumeInfo']['publishedDate']);
+        }
+
+        $ordered_dates = $publish_dates;
+
+        // Sort high to low (most recently published first)
+        rsort($ordered_dates, SORT_NUMERIC);
+
+        foreach ($ordered_dates as $index => $date) {
+            $this->assertEquals($date, $publish_dates[$index]);
+        }
+
+    }
 }
