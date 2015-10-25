@@ -9,6 +9,8 @@ use Nerdstorm\GoogleBooks\Enum\ProjectionEnum;
 use Nerdstorm\GoogleBooks\Enum\PublicationTypeEnum;
 use Nerdstorm\GoogleBooks\Enum\VolumeFilterEnum;
 use Nerdstorm\GoogleBooks\Exception\ArgumentOutOfBoundsException;
+use Nerdstorm\GoogleBooks\Exception\InvalidVolumeId;
+use Nerdstorm\GoogleBooks\Exception\InvalidVolumeIdException;
 use Nerdstorm\GoogleBooks\Query\QueryInterface;
 
 class VolumesSearch extends AbstractSearchBase
@@ -51,7 +53,7 @@ class VolumesSearch extends AbstractSearchBase
         PublicationTypeEnum $print_type = null, ProjectionEnum $projection = null)
     {
         $api_method = 'volumes/';
-        $query = [];
+        $query      = [];
         $query['q'] = (string) $q;
 
         // Google Books API only filters based on downloadable epub content.
@@ -114,16 +116,33 @@ class VolumesSearch extends AbstractSearchBase
      * You can use the API to get the volume ID by making a request that returns a Volume resource; you can find the
      * volume ID in its id field.
      *
-     * @param string         $volume_id
-     * @param string         $partner
-     * @param ProjectionEnum $projection
-     * @param string         $source
+     * @param string              $volume_id
+     * @param ProjectionEnum|null $projection
+     * @param string              $source
      *
+     * @throws InvalidVolumeIdException
      * @return Volume
      */
-    public function volumeGet($volume_id, $partner = null, ProjectionEnum $projection = ProjectionEnum::LITE,
+    public function volumeGet($volume_id, ProjectionEnum $projection = null,
         $source = null)
     {
+        $query = [];
 
+        if (!$volume_id) {
+            throw new InvalidVolumeIdException('Volume ID cannot be empty');
+        }
+
+        // Set projection
+        if (null !== $projection) {
+            $query['projection'] = $projection->value();
+        }
+
+        // If restricted by book source
+        if (!empty($source)) {
+            $query['source'] = $source;
+        }
+
+        $api_method = 'volumes/' . urlencode($volume_id);
+        return $this->send('get', $api_method, ['query' => $query]);
     }
 }

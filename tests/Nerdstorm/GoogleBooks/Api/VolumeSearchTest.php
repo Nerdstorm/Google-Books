@@ -5,6 +5,7 @@ namespace tests\Nerdstorm\GoogleBooks\Api;
 use GuzzleHttp\Psr7\Response;
 use Nerdstorm\GoogleBooks\Api\VolumesSearch;
 use Nerdstorm\GoogleBooks\Enum\OrderByEnum;
+use Nerdstorm\GoogleBooks\Enum\ProjectionEnum;
 use Nerdstorm\GoogleBooks\Enum\PublicationTypeEnum;
 use Nerdstorm\GoogleBooks\Enum\VolumeFilterEnum;
 use Nerdstorm\GoogleBooks\Query\VolumeSearchQuery;
@@ -101,7 +102,7 @@ class VolumeSearchTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function testVolumesListOrderByTest()
+    public function testVolumesListOrderBy()
     {
         /** @var Query $query */
         $query = new VolumeSearchQuery('Flowers');
@@ -128,7 +129,7 @@ class VolumeSearchTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function testVolumesListPrintTypeTest()
+    public function testVolumesListPrintType()
     {
         /** @var Query $query */
         $query = new VolumeSearchQuery('Flowers');
@@ -160,6 +161,58 @@ class VolumeSearchTest extends \PHPUnit_Framework_TestCase
         foreach ($data['items'] as $volume) {
             $this->assertEquals($volume['volumeInfo']['printType'], 'MAGAZINE');
         }
+
+    }
+
+    public function testVolumeGetById()
+    {
+        // Volume: Systems Analysis and Design
+        $volume_id = '2kjxBQAAQBAJ';
+
+        /** @var Response $response */
+        $response = $this->volume_search->volumeGet($volume_id);
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $json = (string) $response->getBody();
+        $data = json_decode($json, true);
+
+        $this->assertEquals('application/json; charset=UTF-8', $response->getHeader('Content-Type')[0]);
+        $this->assertEquals($data['kind'], 'books#volume');
+        $this->assertEquals($data['id'], $volume_id);
+    }
+
+    public function testVolumeGetByIdAndProjection()
+    {
+        // Volume: Systems Analysis and Design
+        $volume_id = '2kjxBQAAQBAJ';
+
+        /** @var Response $response */
+        // Projection: FULL
+        $response = $this->volume_search->volumeGet($volume_id, ProjectionEnum::FULL());
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $json = (string) $response->getBody();
+        $data = json_decode($json, true);
+
+        $this->assertEquals('application/json; charset=UTF-8', $response->getHeader('Content-Type')[0]);
+        $this->assertEquals($data['kind'], 'books#volume');
+        $this->assertEquals($data['id'], $volume_id);
+        $this->assertArrayHasKey('pageCount', $data['volumeInfo']);
+        $this->assertArrayHasKey('categories', $data['volumeInfo']);
+
+        /** @var Response $response */
+        // Projection: LITE
+        $response = $this->volume_search->volumeGet($volume_id, ProjectionEnum::LITE());
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $json = (string) $response->getBody();
+        $data = json_decode($json, true);
+
+        $this->assertEquals('application/json; charset=UTF-8', $response->getHeader('Content-Type')[0]);
+        $this->assertEquals($data['kind'], 'books#volume');
+        $this->assertEquals($data['id'], $volume_id);
+        $this->assertArrayNotHasKey('pageCount', $data['volumeInfo']);
+        $this->assertArrayNotHasKey('categories', $data['volumeInfo']);
 
     }
 }
