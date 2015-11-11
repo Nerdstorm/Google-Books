@@ -1,10 +1,11 @@
 <?php
 
-namespace Nerdstorm\GoogleBooks\Service;
+namespace Nerdstorm\GoogleBooks\Annotations\Mapper;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
-use Nerdstorm\GoogleBooks\Annotations\JsonProperty;
+use Nerdstorm\GoogleBooks\Annotations\Annotation\JsonProperty;
+use Nerdstorm\GoogleBooks\Annotations\Annotation\Object;
 use Nerdstorm\GoogleBooks\Entity\Volume;
 
 class AnnotationMapper
@@ -33,6 +34,15 @@ class AnnotationMapper
         }
 
         $this->reader = new AnnotationReader();
+    }
+
+    protected function resolveEntity($entity_type)
+    {
+        switch ($entity_type) {
+            case 'books#volume':
+                $mapped_object = new Volume();
+                break;
+        }
     }
 
     /**
