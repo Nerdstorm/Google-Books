@@ -2,9 +2,9 @@
 
 namespace tests\Nerdstorm\GoogleBooks\Service;
 
-use Nerdstorm\GoogleBooks\Annotations\Object;
-use Nerdstorm\GoogleBooks\Annotations\JsonProperty;
-use Nerdstorm\GoogleBooks\Service\AnnotationMapper;
+use Nerdstorm\GoogleBooks\Annotations\Annotation\Object;
+use Nerdstorm\GoogleBooks\Annotations\Annotation\JsonProperty;
+use Nerdstorm\GoogleBooks\Annotations\Mapper\AnnotationMapper;
 use tests\Nerdstorm\Config;
 
 class AnnotationMapperTest extends \PHPUnit_Framework_TestCase

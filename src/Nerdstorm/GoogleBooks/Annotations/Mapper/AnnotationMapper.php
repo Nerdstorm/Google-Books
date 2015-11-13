@@ -4,14 +4,14 @@ namespace Nerdstorm\GoogleBooks\Annotations\Mapper;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
-use Nerdstorm\GoogleBooks\Annotations\Annotation\JsonProperty;
-use Nerdstorm\GoogleBooks\Annotations\Annotation\Object;
-use Nerdstorm\GoogleBooks\Entity\Volume;
+use Nerdstorm\GoogleBooks\Entity as Entity;
 
 class AnnotationMapper
 {
-    const CLASS_OBJECT   = 'Nerdstorm\GoogleBooks\Annotations\Object';
-    const CLASS_PROPERTY = 'Nerdstorm\GoogleBooks\Annotations\JsonProperty';
+    const BASE_PATH        = __DIR__ . '/../../../../';
+    const ENTITY_NAMESPACE = 'Nerdstorm\\GoogleBooks\\Entity\\';
+    const CLASS_OBJECT     = 'Nerdstorm\\GoogleBooks\\Annotations\\Object';
+    const CLASS_PROPERTY   = 'Nerdstorm\\GoogleBooks\\Annotations\\JsonProperty';
 
     /**
      * @var AnnotationReader
@@ -19,30 +19,30 @@ class AnnotationMapper
     protected $reader;
 
     /**
-     * @param array $paths
+     * Parsed entity classes list
+     * @var Array
      */
-    public function __construct($paths = [])
-    {
-        if (!$paths) {
-            $paths = [
-                ['Nerdstorm\GoogleBooks\Annotations', __DIR__ . '/../../../'],
-            ];
-        }
+    protected $entities;
 
-        foreach ($paths as $path) {
-            AnnotationRegistry::registerAutoloadNamespace($path[0], $path[1]);
-        }
+    public function __construct()
+    {
+        // Load annotation classes
+        AnnotationRegistry::registerAutoloadNamespace(
+            'Nerdstorm\GoogleBooks\Annotations\Annotation',
+            self::BASE_PATH
+        );
 
         $this->reader = new AnnotationReader();
-    }
 
-    protected function resolveEntity($entity_type)
-    {
-        switch ($entity_type) {
-            case 'books#volume':
-                $mapped_object = new Volume();
-                break;
+        // Load entities for annotation mapping
+        $dir_iterator   = new \RecursiveDirectoryIterator(self::BASE_PATH . 'Nerdstorm/GoogleBooks/Entity/');
+        $regex_iterator = new \RegexIterator($dir_iterator, '/^.+\.php$/i', \RecursiveRegexIterator::GET_MATCH);
+
+        foreach ($regex_iterator as $entity_file) {
+            $this->entities[] = self::ENTITY_NAMESPACE . substr(basename($entity_file[0]), 0, -4);
+            include_once $entity_file[0];
         }
+
     }
 
     /**
@@ -52,11 +52,14 @@ class AnnotationMapper
      * TODO:
      *      JSON objects with "kind" can be mapped via the switch, but inner JSON data mapping needs a more
      *      efficient way to implement as there could be recusion.
+     *
      * @return Volume|null
      */
     public function map(array $json_object, $parent_object = null)
     {
         $mapped_object = null;
+
+        return;
 
         switch ($json_object['kind']) {
             case 'books#volume':
@@ -68,8 +71,10 @@ class AnnotationMapper
 
         foreach ($reflection_object->getProperties() as $reflection_property) {
 
-            // Fetch annotations from the annotation reader
-            /** @var JsonProperty $annotation */
+            /**
+             * Fetch annotations from the annotation reader
+             * @var Nerdstorm\GoogleBooks\Annotations\Annotation\JsonProperty $annotation
+             */
             $annotation = $this->reader->getPropertyAnnotation($reflection_property, self::CLASS_PROPERTY);
 
             if (null !== $annotation) {
@@ -101,5 +106,14 @@ class AnnotationMapper
         }
 
         return $mapped_object;
+    }
+
+    protected function resolveEntity($entity_type)
+    {
+        switch ($entity_type) {
+            case 'books#volume':
+                $mapped_object = new Volume();
+                break;
+        }
     }
 }
