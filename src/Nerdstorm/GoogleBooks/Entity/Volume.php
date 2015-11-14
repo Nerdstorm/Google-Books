@@ -2,7 +2,7 @@
 
 namespace Nerdstorm\GoogleBooks\Entity;
 
-use Nerdstorm\GoogleBooks\Annotations;
+use Nerdstorm\GoogleBooks\Annotations as Annotations;
 
 /**
  * Class Volume
@@ -43,7 +43,7 @@ class Volume
      * General volume information
      *
      * @var VolumeInfo
-     * @Annotations\JsonProperty("volumeInfo", type="object")
+     * @Annotations\JsonProperty("volumeInfo", type="object", className="Nerdstorm\GoogleBooks\Entity\VolumeInfo")
      */
     protected $volume_info;
 
