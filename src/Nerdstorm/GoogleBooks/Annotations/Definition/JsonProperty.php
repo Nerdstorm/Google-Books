@@ -11,12 +11,12 @@ class JsonProperty
     /**
      * @var string
      */
-    public $name;
+    protected $name;
 
     /**
      * @var string
      */
-    public $type = 'string';
+    protected $type = 'string';
 
     public function __construct($options)
     {

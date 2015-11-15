@@ -11,5 +11,21 @@ class Object
     /**
      * @var string
      */
-    public $name;
+    protected $name;
+
+    public function __construct($options)
+    {
+        $this->name = $options['value'];
+    }
+
+    /**
+     * Get the name of the object JSON mapping
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
 }

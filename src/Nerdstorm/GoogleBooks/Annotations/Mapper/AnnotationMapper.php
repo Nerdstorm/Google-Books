@@ -7,6 +7,7 @@ use Doctrine\Common\Annotations\AnnotationRegistry;
 use Nerdstorm\GoogleBooks\Annotations\Definition\JsonProperty;
 use Nerdstorm\GoogleBooks\Annotations\Definition\Object;
 use Nerdstorm\GoogleBooks\Entity as Entity;
+use Symfony\Component\Yaml\Exception\RuntimeException;
 
 class AnnotationMapper
 {
@@ -37,21 +38,7 @@ class AnnotationMapper
         );
 
         $this->reader = new AnnotationReader();
-
-        // Load entities for annotation mapping
-        $dir_iterator   = new \RecursiveDirectoryIterator(self::BASE_PATH . 'Nerdstorm/GoogleBooks/Entity/');
-        $regex_iterator = new \RegexIterator($dir_iterator, '/^.+\.php$/i', \RecursiveRegexIterator::GET_MATCH);
-
-        foreach ($regex_iterator as $entity_file) {
-            $class_name        = self::ENTITY_NAMESPACE . substr(basename($entity_file[0]), 0, -4);
-            $class             = new $class_name();
-            $reflection_object = new \ReflectionObject($class);
-
-            /** @var Object $annotation */
-            $annotation = $this->reader->getClassAnnotations($reflection_object);
-            var_dump($annotation);
-        }
-
+        $this->mapClassAnnotations();
     }
 
     /**
@@ -66,7 +53,7 @@ class AnnotationMapper
      */
     public function map(array $json_object, $parent_object = null)
     {
-        $mapped_object = null;
+        $mapped_object = $this->resolveEntity($json_object);
 
         $reflection_object = new \ReflectionObject($mapped_object);
 
@@ -109,12 +96,48 @@ class AnnotationMapper
         return $mapped_object;
     }
 
-    protected function resolveEntity($entity_type)
+    /**
+     * @param array $json_object
+     *
+     * @return false|mixed
+     */
+    protected function resolveEntity($kind)
     {
-        switch ($entity_type) {
-            case 'books#volume':
-                $mapped_object = new Volume();
-                break;
+        if (!$kind) {
+            return false;
+        }
+
+        if (!isset($this->entity_mappings[$kind])) {
+            throw new \RuntimeException('JSON object kind ' . $kind . ' not defined within entity annotations');
+        }
+
+        $class_name = $this->entity_mappings[$kind];
+        return new $class_name();
+    }
+
+    /**
+     * Map entity class names to their JSON object type (kind).
+     */
+    protected function mapClassAnnotations()
+    {
+        // Load entities for annotation mappings
+        $dir_iterator   = new \RecursiveDirectoryIterator(self::BASE_PATH . 'Nerdstorm/GoogleBooks/Entity/');
+        $regex_iterator = new \RegexIterator($dir_iterator, '/^.+\.php$/i', \RecursiveRegexIterator::GET_MATCH);
+
+        // Map class annotations
+        foreach ($regex_iterator as $entity_file) {
+            $class_name        = self::ENTITY_NAMESPACE . substr(basename($entity_file[0]), 0, -4);
+            $class             = new $class_name();
+            $reflection_object = new \ReflectionObject($class);
+
+            /** @var Object $annotation */
+            $annotations = $this->reader->getClassAnnotations($reflection_object);
+
+            if (!$annotations) {
+                continue;
+            }
+
+            $this->entity_mappings[$annotations[0]->getName()] = $class_name;
         }
     }
 }
