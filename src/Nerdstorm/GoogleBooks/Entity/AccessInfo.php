@@ -10,7 +10,7 @@ use Nerdstorm\GoogleBooks\Enum\AccessViewStatusEnum;
  * Any information about a volume related to reading or obtaining that volume text.
  * This information can depend on country (books may be public domain in one country but not in another, e.g.).
  */
-class AccessInfo
+class AccessInfo implements EntityInterface
 {
     /**
      * The two-letter ISO_3166-1 country code for which this access information is valid. (In LITE projection.)

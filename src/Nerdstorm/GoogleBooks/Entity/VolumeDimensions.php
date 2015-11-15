@@ -7,7 +7,7 @@ namespace Nerdstorm\GoogleBooks\Entity;
  *
  * Physical dimensions of this volume.
  */
-class VolumeDimensions
+class VolumeDimensions implements EntityInterface
 {
     /**
      * Height or length of this volume (in cm).

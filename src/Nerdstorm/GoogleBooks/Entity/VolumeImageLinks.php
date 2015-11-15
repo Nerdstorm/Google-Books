@@ -7,7 +7,7 @@ namespace Nerdstorm\GoogleBooks\Entity;
  *
  * A list of image links for all the sizes that are available. (in LITE projection)
  */
-class VolumeImageLinks
+class VolumeImageLinks implements EntityInterface
 {
     /**
      * Image link for thumbnail size (width of ~128 pixels). (in LITE projection)

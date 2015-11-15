@@ -53,7 +53,11 @@ class AnnotationMapper
      */
     public function map(array $json_object, $parent_object = null)
     {
-        $mapped_object = $this->resolveEntity($json_object);
+        if (!empty($json_object['kind'])) {
+            $mapped_object = $this->resolveEntity($json_object['kind']);
+        } else {
+            $mapped_object = $parent_object;
+        }
 
         $reflection_object = new \ReflectionObject($mapped_object);
 
@@ -97,7 +101,7 @@ class AnnotationMapper
     }
 
     /**
-     * @param array $json_object
+     * @param string $kind
      *
      * @return false|mixed
      */
@@ -127,6 +131,12 @@ class AnnotationMapper
         // Map class annotations
         foreach ($regex_iterator as $entity_file) {
             $class_name        = self::ENTITY_NAMESPACE . substr(basename($entity_file[0]), 0, -4);
+
+            // Ignore interfaces
+            if (Entity\EntityInterface::class == $class_name ) {
+                continue;
+            }
+
             $class             = new $class_name();
             $reflection_object = new \ReflectionObject($class);
 

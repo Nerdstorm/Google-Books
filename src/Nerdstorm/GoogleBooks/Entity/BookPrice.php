@@ -7,7 +7,7 @@ namespace Nerdstorm\GoogleBooks\Entity;
  *
  * Suggested retail price and list price of books can be represented using a BookPrice object.
  */
-class BookPrice
+class BookPrice implements EntityInterface
 {
     /**
      * Amount in the currency listed below. (In LITE projection.)

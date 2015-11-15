@@ -11,7 +11,7 @@ use Nerdstorm\GoogleBooks\Enum\SaleabilityEnum;
  * This information can depend on the country where the request
  * originates from (i.e. books may not be for sale in certain countries).
  */
-class SaleInfo
+class SaleInfo implements EntityInterface
 {
     /**
      * The two-letter ISO_3166-1 country code for which this sale information is valid.

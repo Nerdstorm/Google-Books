@@ -13,7 +13,7 @@ use Nerdstorm\GoogleBooks\Annotations\Definition as Annotations;
  *
  * @Annotations\Object("books#volume")
  */
-class Volume
+class Volume implements EntityInterface
 {
     /**
      * Unique identifier for a volume

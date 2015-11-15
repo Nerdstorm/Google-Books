@@ -7,7 +7,7 @@ namespace Nerdstorm\GoogleBooks\Entity;
  *
  * General volume information.
  */
-class VolumeInfo
+class VolumeInfo implements EntityInterface
 {
 
     /**

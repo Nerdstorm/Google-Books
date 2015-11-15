@@ -7,7 +7,7 @@ namespace Nerdstorm\GoogleBooks\Entity;
  *
  * The volumess collection allows you to retrieve volumes from Google Books.
  */
-class Volumes
+class Volumes implements EntityInterface
 {
     /**
      * Number of book volumes found.
