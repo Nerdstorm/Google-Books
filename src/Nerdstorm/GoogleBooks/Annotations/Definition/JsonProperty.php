@@ -1,6 +1,6 @@
 <?php
 
-namespace Nerdstorm\GoogleBooks\Annotations;
+namespace Nerdstorm\GoogleBooks\Annotations\Definition;
 
 /**
  * @Annotation

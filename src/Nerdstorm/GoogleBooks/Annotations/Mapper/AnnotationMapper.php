@@ -4,14 +4,16 @@ namespace Nerdstorm\GoogleBooks\Annotations\Mapper;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
+use Nerdstorm\GoogleBooks\Annotations\Definition\JsonProperty;
+use Nerdstorm\GoogleBooks\Annotations\Definition\Object;
 use Nerdstorm\GoogleBooks\Entity as Entity;
 
 class AnnotationMapper
 {
     const BASE_PATH        = __DIR__ . '/../../../../';
-    const ENTITY_NAMESPACE = '\\Nerdstorm\\GoogleBooks\\Entity\\';
-    const CLASS_OBJECT     = 'Nerdstorm\GoogleBooks\Annotations\Object';
-    const CLASS_PROPERTY   = 'Nerdstorm\GoogleBooks\Annotations\JsonProperty';
+    const ENTITY_NAMESPACE = 'Nerdstorm\\GoogleBooks\\Entity\\';
+    const CLASS_OBJECT     = 'Nerdstorm\GoogleBooks\Annotations\Definition\Object';
+    const CLASS_PROPERTY   = 'Nerdstorm\GoogleBooks\Annotations\Definition\JsonProperty';
 
     /**
      * @var AnnotationReader
@@ -30,27 +32,26 @@ class AnnotationMapper
     {
         // Load annotation classes
         AnnotationRegistry::registerAutoloadNamespace(
-            'Nerdstorm\GoogleBooks\Annotations',
+            'Nerdstorm\GoogleBooks\Annotations\Definition',
             self::BASE_PATH
         );
 
         $this->reader = new AnnotationReader();
 
-//        // Load entities for annotation mapping
-//        $dir_iterator   = new \RecursiveDirectoryIterator(self::BASE_PATH . 'Nerdstorm/GoogleBooks/Entity/');
-//        $regex_iterator = new \RegexIterator($dir_iterator, '/^.+\.php$/i', \RecursiveRegexIterator::GET_MATCH);
-//
-//        foreach ($regex_iterator as $entity_file) {
-//            $class_name        = self::ENTITY_NAMESPACE . substr(basename($entity_file[0]), 0, -4);
-//            $class             = new $class_name();
-//            $reflection_object = new \ReflectionObject($class);
-//
-//            /** @var Object $annotation */
-//            $annotation = $this->reader->getClassAnnotations($reflection_object);
-//            var_dump($annotation);
-//        }
-//
-//        die;
+        // Load entities for annotation mapping
+        $dir_iterator   = new \RecursiveDirectoryIterator(self::BASE_PATH . 'Nerdstorm/GoogleBooks/Entity/');
+        $regex_iterator = new \RegexIterator($dir_iterator, '/^.+\.php$/i', \RecursiveRegexIterator::GET_MATCH);
+
+        foreach ($regex_iterator as $entity_file) {
+            $class_name        = self::ENTITY_NAMESPACE . substr(basename($entity_file[0]), 0, -4);
+            $class             = new $class_name();
+            $reflection_object = new \ReflectionObject($class);
+
+            /** @var Object $annotation */
+            $annotation = $this->reader->getClassAnnotations($reflection_object);
+            var_dump($annotation);
+        }
+
     }
 
     /**

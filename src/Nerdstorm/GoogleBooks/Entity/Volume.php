@@ -2,7 +2,7 @@
 
 namespace Nerdstorm\GoogleBooks\Entity;
 
-use Nerdstorm\GoogleBooks\Annotations as Annotations;
+use Nerdstorm\GoogleBooks\Annotations\Definition as Annotations;
 
 /**
  * Class Volume

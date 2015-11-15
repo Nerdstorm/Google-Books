@@ -2,8 +2,6 @@
 
 namespace tests\Nerdstorm\GoogleBooks\Service;
 
-use Nerdstorm\GoogleBooks\Annotations\Object;
-use Nerdstorm\GoogleBooks\Annotations\JsonProperty;
 use Nerdstorm\GoogleBooks\Annotations\Mapper\AnnotationMapper;
 use tests\Nerdstorm\Config;
 
