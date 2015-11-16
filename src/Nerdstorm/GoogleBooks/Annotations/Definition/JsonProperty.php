@@ -18,12 +18,21 @@ class JsonProperty
      */
     protected $type = 'string';
 
+    /**
+     * @var string
+     */
+    protected class_name;
+
     public function __construct($options)
     {
         $this->name = $options['value'];
 
         if (isset($options['type'])) {
             $this->type = $options['type'];
+        }
+
+        if (isset($options['className'])) {
+            $this->class_name = $options['className'];
         }
     }
 
@@ -46,6 +55,16 @@ class JsonProperty
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * Get the class name set in the property
+     *
+     * @return string
+     */
+    public function getClassName()
+    {
+        return $this->class_name;
     }
 
     /**
