@@ -21,7 +21,7 @@ class JsonProperty
     /**
      * @var string
      */
-    protected class_name;
+    protected $class_name;
 
     public function __construct($options)
     {
