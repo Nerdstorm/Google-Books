@@ -108,8 +108,9 @@ class AnnotationMapperTest extends \PHPUnit_Framework_TestCase
     public function testTreeRecusion()
     {
         $json_obj = json_decode($this->book_volume, true);
-        $obj = $this->mapper->treeRecursion($json_obj);
+        $object = $this->mapper->resolveEntity('books#volume');
+        $tree = $this->mapper->treeRecursion($object, $json_obj);
 
-        var_dump($obj);
+        var_dump($tree);
     }
 }

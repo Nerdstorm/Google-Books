@@ -53,6 +53,7 @@ class Volume implements EntityInterface
      * not be for sale in certain countries)
      *
      * @var SaleInfo
+     * @Annotations\JsonProperty("saleInfo", type="object", className="Nerdstorm\GoogleBooks\Entity\SaleInfo")
      */
     protected $sale_info;
 

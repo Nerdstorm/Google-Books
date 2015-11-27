@@ -2,6 +2,8 @@
 
 namespace Nerdstorm\GoogleBooks\Entity;
 
+use Nerdstorm\GoogleBooks\Annotations\Definition as Annotations;
+
 /**
  * Class VolumeInfo
  *
@@ -114,6 +116,7 @@ class VolumeInfo implements EntityInterface
      * A list of image links for all the sizes that are available. (in LITE projection)
      *
      * @var VolumeImageLinks
+     * @Annotations\JsonProperty("imageLinks", type="object", className="Nerdstorm\GoogleBooks\Entity\VolumeImageLinks")
      */
     protected $image_links;
 

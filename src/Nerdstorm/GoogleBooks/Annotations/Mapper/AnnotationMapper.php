@@ -6,6 +6,8 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Nerdstorm\GoogleBooks\Annotations\Definition\JsonProperty;
 use Nerdstorm\GoogleBooks\Entity as Entity;
+use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 class AnnotationMapper
 {
@@ -27,6 +29,11 @@ class AnnotationMapper
      */
     protected $entity_mappings;
 
+    /**
+     * @var PropertyAccessor
+     */
+    protected $accessor;
+
     public function __construct()
     {
         // Load annotation classes
@@ -35,8 +42,10 @@ class AnnotationMapper
             self::BASE_PATH
         );
 
-        $this->reader = new AnnotationReader();
+        $this->accessor = PropertyAccess::createPropertyAccessor();
+        $this->reader   = new AnnotationReader();
         $this->mapClassAnnotations();
+
     }
 
     /**
@@ -70,131 +79,38 @@ class AnnotationMapper
             $this->entity_mappings[$annotations[0]->getName()] = $class_name;
         }
     }
-//
-//    /**
-//     * TODO:
-//     *      JSON objects with "kind" can be mapped via the switch, but inner JSON data mapping needs a more
-//     *      efficient way to implement as there could be recusion.
-//     *
-//     * @return Entity\EntityInterface|null
-//     */
-//    public function map(Entity\EntityInterface $entity, $json_key, $json_data)
-//    {
-//        $reflection_object = new \ReflectionObject($entity);
-//
-//        foreach ($reflection_object->getProperties() as $reflection_property) {
-//
-//            /**
-//             * Fetch annotations from the annotation reader
-//             * @var JsonProperty $annotation
-//             */
-//            $annotation = $this->reader->getPropertyAnnotation($reflection_property, self::CLASS_PROPERTY);
-//
-//            if (null !== $annotation) {
-//                $property_name = $annotation->getName();
-//
-//                if (isset($json_object[$property_name])) {
-//
-//                    // Try to convert the JSON value to the requested PHP type
-//                    $type  = $annotation->getType();
-//                    $value = $json_object[$property_name];
-//
-//                    // Try to instantiate object types
-//                    if ('entity' == $type) {
-//                        $parent_object = clone $entity;
-//                        $this->map($value, $parent_object);
-//                    } elseif (false === settype($value, $type)) {
-//                        throw new \RuntimeException(sprintf('Could not convert value to type "%s"', $value));
-//                    }
-//
-//                    call_user_func(
-//                        [
-//                            $entity,
-//                            'set' . $annotation->getRelatedMethodName(),
-//                        ],
-//                        $value
-//                    );
-//                }
-//            }
-//        }
-//
-//        return $entity;
-//    }
 
     /**
-     * @param array  $tree
-     * @param string $child_stem
-     *
      * @return array
      */
-    public function treeRecursion(array $tree, $child_stem = null)
+    public function treeRecursion($object, $data_tree)
     {
-        static $object;
-        $reflection = null;
+        $reflection = new \ReflectionObject($object);
 
-        foreach ($tree as $stem => $leaf) {
+        // Iterate through current object properties
+        foreach ($reflection->getProperties() as $reflection_property) {
 
-            // Recurse throught array leafs
-            if (is_array($leaf)) {
-                $this->treeRecursion($leaf, $stem);
+            /**
+             * Fetch annotations from the annotation reader
+             * @var JsonProperty $annotation
+             */
+            $annotation = $this->reader->getPropertyAnnotation($reflection_property, self::CLASS_PROPERTY);
+
+            if (null == $annotation) {
                 continue;
             }
 
-            // Figure out the parent entity type
-            if ($stem === 'kind') {
-                $object = $this->resolveEntity($leaf);
+            $property_name = $annotation->getName();
+
+            if ($annotation->getType() == 'object') {
+                $class_name = $annotation->getClassName();
+                $child_object = new $class_name();
+                $this->accessor->setValue($object, $property_name, $child_object);
+                $this->treeRecursion($child_object, $data_tree);
                 continue;
             }
 
-            $reflection = new \ReflectionObject($object);
-
-            // Iterate through current object properties
-            foreach ($reflection->getProperties() as $reflection_property) {
-
-                /**
-                 * Fetch annotations from the annotation reader
-                 * @var JsonProperty $annotation
-                 */
-                $annotation = $this->reader->getPropertyAnnotation($reflection_property, self::CLASS_PROPERTY);
-
-                if (null !== $annotation) {
-                    $property_name = $annotation->getName();
-
-                    if (isset($leaf[$property_name])) {
-
-                        // Try to convert the JSON value to the requested PHP type
-                        $type  = $annotation->getType();
-                        $value = $leaf[$property_name];
-
-                        // Try to instantiate object types
-                        if ('entity' == $type) {
-                            call_user_func(
-                                [
-                                    $object,
-                                    'set' . $annotation->getRelatedMethodName(),
-                                ],
-                                $value
-                            );
-
-                            $this->treeRecursion($value, $stem);
-
-                            continue;
-
-                        } elseif (false === settype($value, $type)) {
-                            throw new \RuntimeException(sprintf('Could not convert value to type "%s"', $value));
-                        }
-
-                        call_user_func(
-                            [
-                                $object,
-                                'set' . $annotation->getRelatedMethodName(),
-                            ],
-                            $value
-                        );
-                    }
-
-                }
-            }
+            $this->accessor->setValue($object, $property_name, 'test');
         }
 
         return $object;
@@ -205,7 +121,7 @@ class AnnotationMapper
      *
      * @return false|mixed
      */
-    protected function resolveEntity($kind)
+    public function resolveEntity($kind)
     {
         if (!$kind) {
             return false;
