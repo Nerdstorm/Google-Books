@@ -96,21 +96,31 @@ class AnnotationMapper
              */
             $annotation = $this->reader->getPropertyAnnotation($reflection_property, self::CLASS_PROPERTY);
 
+            // Ignore on empty annotation
             if (null == $annotation) {
                 continue;
             }
 
-            $property_name = $annotation->getName();
+            $tree_property_name = $annotation->getName();
 
-            if ($annotation->getType() == 'object') {
-                $class_name = $annotation->getClassName();
-                $child_object = new $class_name();
-                $this->accessor->setValue($object, $property_name, $child_object);
-                $this->treeRecursion($child_object, $data_tree);
+            // Ignore and continue when no data found for property being set
+            if (empty($data_tree[$tree_property_name])) {
                 continue;
             }
 
-            $this->accessor->setValue($object, $property_name, 'test');
+            // Attach child objects to tree
+            if ($annotation->getType() == 'object') {
+                $class_name = $annotation->getClassName();
+                $child_object = new $class_name();
+                $this->accessor->setValue($object, $tree_property_name, $child_object);
+                $sub_tree = $this->accessor->getValue($data_tree, "[$tree_property_name]");
+
+                // Recall the function for the child object
+                $this->treeRecursion($child_object, $sub_tree);
+                continue;
+            } else {
+                $this->accessor->setValue($object, $tree_property_name, $data_tree[$tree_property_name]);
+            }
         }
 
         return $object;

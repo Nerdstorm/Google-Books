@@ -2,6 +2,8 @@
 
 namespace Nerdstorm\GoogleBooks\Entity;
 
+use Nerdstorm\GoogleBooks\Annotations\Definition as Annotations;
+
 /**
  * Class VolumeImageLinks
  *
@@ -27,6 +29,7 @@ class VolumeImageLinks implements EntityInterface
      * Image link for medium size (width of ~575 pixels). (in LITE projection)
      *
      * @var string
+     * @Annotations\JsonProperty("medium", type="string")
      */
     protected $medium;
 
@@ -41,6 +44,7 @@ class VolumeImageLinks implements EntityInterface
      * Image link for small thumbnail size (width of ~80 pixels). (in LITE projection)
      *
      * @var string
+     * @Annotations\JsonProperty("smallThumbnail", type="string")
      */
     protected $small_thumbnail;
 
