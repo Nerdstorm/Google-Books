@@ -109,4 +109,23 @@ class AnnotationMapperTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($json_obj[$key], $actual);
         }
     }
+
+    public function testVolumeInfoEntityMapping()
+    {
+        $json_obj = json_decode($this->book_volume, true);
+        $object = $this->mapper->resolveEntity($json_obj['kind']);
+
+        // Get the mapped volume object
+        $volume = $this->mapper->map($object, $json_obj);
+
+        foreach ($json_obj['volumeInfo'] as $key => $value) {
+            $actual = call_user_func([$volume->getVolumeInfo(), 'get' . ucfirst($key)]);
+
+            if (is_array($json_obj['volumeInfo'][$key])) {
+                continue;
+            }
+
+            $this->assertEquals($json_obj['volumeInfo'][$key], $actual);
+        }
+    }
 }

@@ -16,6 +16,7 @@ class VolumeInfo implements EntityInterface
      * Volume title. (In LITE projection.)
      *
      * @var string
+     * @Annotations\JsonProperty("title", type="string")
      */
     protected $title;
 
@@ -23,6 +24,7 @@ class VolumeInfo implements EntityInterface
      * Volume subtitle. (In LITE projection.)
      *
      * @var string
+     * @Annotations\JsonProperty("subtitle", type="string")
      */
     protected $subtitle;
 
@@ -30,6 +32,7 @@ class VolumeInfo implements EntityInterface
      * The names of the authors and/or editors for this volume. (In LITE projection)
      *
      * @var string[]
+     * @Annotations\JsonProperty("authors", type="string[]")
      */
     protected $authors;
 
@@ -37,6 +40,7 @@ class VolumeInfo implements EntityInterface
      * Publisher of this volume. (In LITE projection.)
      *
      * @var string
+     * @Annotations\JsonProperty("publisher", type="string")
      */
     protected $publisher;
 
@@ -44,6 +48,7 @@ class VolumeInfo implements EntityInterface
      * Date of publication. (In LITE projection.)
      *
      * @var \DateTime
+     * @Annotations\JsonProperty("publishedDate", type="datetime")
      */
     protected $published_date;
 
