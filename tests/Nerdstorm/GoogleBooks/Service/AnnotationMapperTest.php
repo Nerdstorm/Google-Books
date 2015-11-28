@@ -3,7 +3,6 @@
 namespace tests\Nerdstorm\GoogleBooks\Service;
 
 use Nerdstorm\GoogleBooks\Annotations\Mapper\AnnotationMapper;
-use tests\Nerdstorm\Config;
 
 class AnnotationMapperTest extends \PHPUnit_Framework_TestCase
 {
@@ -81,10 +80,6 @@ class AnnotationMapperTest extends \PHPUnit_Framework_TestCase
             "webReaderLink": "http://books.google.com.au/books/reader?id=2kjxBQAAQBAJ&hl=&printsec=frontcover&output=reader&source=gbs_api",
             "accessViewStatus": "SAMPLE",
             "quoteSharingAllowed": false
-           },
-           "searchInfo": {
-            "textSnippet": "The 6th Edition of Systems Analysis and Design continues to offer a hands-on approach to SAD
-                while focusing on the core set of skills that all analysts must possess."
            }
         }
     ';
@@ -95,12 +90,23 @@ class AnnotationMapperTest extends \PHPUnit_Framework_TestCase
         $this->mapper = new AnnotationMapper();
     }
 
-    public function testTreeRecusion()
+    public function testVolumeEntityMapping()
     {
         $json_obj = json_decode($this->book_volume, true);
-        $object = $this->mapper->resolveEntity('books#volume');
-        $tree = $this->mapper->map($object, $json_obj);
+        $object = $this->mapper->resolveEntity($json_obj['kind']);
+        unset($json_obj['kind']);
 
-        var_dump($tree);
+        // Get the mapped volume object
+        $volume = $this->mapper->map($object, $json_obj);
+
+        foreach ($json_obj as $key => $value) {
+            $actual = call_user_func([$volume, 'get' . ucfirst($key)]);
+
+            if (is_array($json_obj[$key])) {
+                continue;
+            }
+
+            $this->assertEquals($json_obj[$key], $actual);
+        }
     }
 }
