@@ -32,7 +32,7 @@ class VolumeInfo implements EntityInterface
      * The names of the authors and/or editors for this volume. (In LITE projection)
      *
      * @var string[]
-     * @Annotations\JsonProperty("authors", type="string[]")
+     * @Annotations\JsonProperty("authors", type="array")
      */
     protected $authors;
 

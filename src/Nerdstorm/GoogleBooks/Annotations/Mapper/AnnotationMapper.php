@@ -115,17 +115,46 @@ class AnnotationMapper
             }
 
             // Attach child objects to tree
-            if ($annotation->getType() == 'object') {
-                $class_name   = $annotation->getClassName();
-                $child_object = new $class_name();
-                $this->accessor->setValue($object, $tree_property_name, $child_object);
-                $sub_tree = $this->accessor->getValue($data_tree, "[$tree_property_name]");
+            switch ($annotation->getType()) {
+                case JsonProperty::TYPE_OBJECT:
+                    $class_name   = $annotation->getClassName();
+                    $child_object = new $class_name();
+                    $this->accessor->setValue($object, $tree_property_name, $child_object);
+                    $sub_tree = $this->accessor->getValue($data_tree, "[$tree_property_name]");
 
-                // Recall the function for the child object
-                $this->map($child_object, $sub_tree);
-                continue;
-            } else {
-                $this->accessor->setValue($object, $tree_property_name, $data_tree[$tree_property_name]);
+                    // Recall the function for the child object
+                    $this->map($child_object, $sub_tree);
+
+                    continue 2;
+                    break;
+
+                case JsonProperty::TYPE_OBJECTARRAY:
+                    $class_name   = $annotation->getClassName();
+                    $child_object = new $class_name();
+                    $this->accessor->setValue($object, $tree_property_name, $child_object);
+                    $sub_tree = $this->accessor->getValue($data_tree, "[$tree_property_name]");
+
+                    // Recall the function for the child object
+                    $this->map($child_object, $sub_tree);
+
+                    continue 2;
+                    break;
+
+                case JsonProperty::TYPE_ARRAY:
+                    $sub_tree = $this->accessor->getValue($data_tree, "[$tree_property_name]");
+                    $this->accessor->setValue($object, $tree_property_name, $sub_tree);
+                    continue 2;
+                    break;
+
+                case JsonProperty::TYPE_DATETIME:
+                    $datetime_string = $this->accessor->getValue($data_tree, "[$tree_property_name]");
+                    $datetime = new \DateTime($datetime_string);
+                    $this->accessor->setValue($object, $tree_property_name, $datetime);
+                    continue 2;
+                    break;
+
+                default:
+                    $this->accessor->setValue($object, $tree_property_name, $data_tree[$tree_property_name]);
             }
         }
 

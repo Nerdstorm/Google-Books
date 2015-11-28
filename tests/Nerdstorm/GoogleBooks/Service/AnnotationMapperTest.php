@@ -123,9 +123,11 @@ class AnnotationMapperTest extends \PHPUnit_Framework_TestCase
 
             if (is_array($json_obj['volumeInfo'][$key])) {
                 continue;
+            } elseif ($actual instanceof \DateTime) {
+                $this->assertEquals(new \DateTime($json_obj['volumeInfo'][$key]), $actual);
+            } else {
+                $this->assertEquals($json_obj['volumeInfo'][$key], $actual);
             }
-
-            $this->assertEquals($json_obj['volumeInfo'][$key], $actual);
         }
     }
 }
