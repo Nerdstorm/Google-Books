@@ -2,10 +2,14 @@
 
 namespace Nerdstorm\GoogleBooks\Entity;
 
+use Nerdstorm\GoogleBooks\Annotations\Definition as Annotations;
+
 /**
  * Class Volumes
  *
  * The volumess collection allows you to retrieve volumes from Google Books.
+ *
+ * @Annotations\Object("books#volumes")
  */
 class Volumes implements EntityInterface
 {
@@ -13,6 +17,7 @@ class Volumes implements EntityInterface
      * Number of book volumes found.
      *
      * @var int
+     * @Annotations\JsonProperty("totalItems", type="int")
      */
     protected $total_items;
 
@@ -20,6 +25,7 @@ class Volumes implements EntityInterface
      * Array of book volume objects.
      *
      * @var Volume[]
+     * @Annotations\JsonProperty("items", type="object", className="Nerdstorm\GoogleBooks\Entity\Volume")
      */
     protected $items;
 

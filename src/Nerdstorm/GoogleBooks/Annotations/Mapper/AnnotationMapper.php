@@ -45,7 +45,6 @@ class AnnotationMapper
         $this->accessor = PropertyAccess::createPropertyAccessor();
         $this->reader   = new AnnotationReader();
         $this->mapClassAnnotations();
-
     }
 
     /**
@@ -81,9 +80,16 @@ class AnnotationMapper
     }
 
     /**
-     * @return array
+     * Map JSON data coming from GoogleBooks API to entities. This is a recursive function
+     * and nested data arrays will be mapped by automatically initialising child entities and enums
+     * required.
+     *
+     * @param Entity\EntityInterface $object
+     * @param array                  $data_tree
+     *
+     * @return Entity\EntityInterface
      */
-    public function treeRecursion($object, $data_tree)
+    public function map(Entity\EntityInterface $object, $data_tree)
     {
         $reflection = new \ReflectionObject($object);
 
@@ -110,13 +116,13 @@ class AnnotationMapper
 
             // Attach child objects to tree
             if ($annotation->getType() == 'object') {
-                $class_name = $annotation->getClassName();
+                $class_name   = $annotation->getClassName();
                 $child_object = new $class_name();
                 $this->accessor->setValue($object, $tree_property_name, $child_object);
                 $sub_tree = $this->accessor->getValue($data_tree, "[$tree_property_name]");
 
                 // Recall the function for the child object
-                $this->treeRecursion($child_object, $sub_tree);
+                $this->map($child_object, $sub_tree);
                 continue;
             } else {
                 $this->accessor->setValue($object, $tree_property_name, $data_tree[$tree_property_name]);
