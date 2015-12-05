@@ -57,6 +57,7 @@ class VolumeInfo implements EntityInterface
      * formatting elements, such as b, i, and br tags. (in LITE projection)
      *
      * @var string
+     * @Annotations\JsonProperty("description", type="string")
      */
     protected $description;
 
@@ -65,6 +66,7 @@ class VolumeInfo implements EntityInterface
      * Identifier type. Possible values are ISBN_10, ISBN_13, ISSN and OTHER.
      *
      * @var array
+     * @Annotations\JsonProperty("industryIdentifier", type="array")
      */
     protected $industry_identifiers;
 
@@ -72,6 +74,7 @@ class VolumeInfo implements EntityInterface
      * Total number of pages.
      *
      * @var int
+     * @Annotations\JsonProperty("pageCount", type="int")
      */
     protected $page_count;
 
@@ -79,6 +82,7 @@ class VolumeInfo implements EntityInterface
      * Physical dimensions of this volume.
      *
      * @var VolumeDimensions
+     * @Annotations\JsonProperty("dimensions", type="object", classType="Nerdstorm\GoogleBooks\Entity\VolumeDimensions")
      */
     protected $dimensions;
 
@@ -86,6 +90,7 @@ class VolumeInfo implements EntityInterface
      * Type of publication of this volume. Possible values are BOOK or MAGAZINE.
      *
      * @var string
+     * @Annotations\JsonProperty("printType", type="string")
      */
     protected $print_type;
 
@@ -93,6 +98,7 @@ class VolumeInfo implements EntityInterface
      * A list of subject categories, such as "Fiction", "Suspense", etc.
      *
      * @var array
+     * @Annotations\JsonProperty("categories", type="array")
      */
     protected $categories;
 
@@ -100,6 +106,7 @@ class VolumeInfo implements EntityInterface
      * The mean review rating for this volume. (min = 1.0, max = 5.0)
      *
      * @var double
+     * @Annotations\JsonProperty("averageRating", type="int")
      */
     protected $average_rating;
 
@@ -107,13 +114,23 @@ class VolumeInfo implements EntityInterface
      * The number of review ratings for this volume.
      *
      * @var int
+     * @Annotations\JsonProperty("ratingsCount", type="int")
      */
     protected $ratings_count;
+
+    /**
+     * Maturity rating.
+     *
+     * @var int
+     * @Annotations\JsonProperty("maturityRating", type="string")
+     */
+    protected $maturity_rating;
 
     /**
      * An identifier for the version of the volume content (text & images). (In LITE projection)
      *
      * @var string
+     * @Annotations\JsonProperty("contentVersion", type="string")
      */
     protected $content_version;
 
@@ -129,6 +146,7 @@ class VolumeInfo implements EntityInterface
      * Best language for this volume (based on content). It is the two-letter ISO 639-1 code such as 'fr', 'en', etc.
      *
      * @var string
+     * @Annotations\JsonProperty("language", type="string")
      */
     protected $language;
 
@@ -137,6 +155,7 @@ class VolumeInfo implements EntityInterface
      * It will be the category from the categories list returned below that has the highest weight.
      *
      * @var string
+     * @Annotations\JsonProperty("mainCategory", type="string")
      */
     protected $main_category;
 
@@ -144,6 +163,7 @@ class VolumeInfo implements EntityInterface
      * URL to preview this volume on the Google Books site.
      *
      * @var string
+     * @Annotations\JsonProperty("previewLink", type="string")
      */
     protected $preview_link;
 
@@ -423,6 +443,26 @@ class VolumeInfo implements EntityInterface
     public function setRatingsCount($ratings_count)
     {
         $this->ratings_count = $ratings_count;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMaturityRating()
+    {
+        return $this->maturity_rating;
+    }
+
+    /**
+     * @param int $maturity_rating
+     *
+     * @return VolumeInfo
+     */
+    public function setMaturityRating($maturity_rating)
+    {
+        $this->maturity_rating = $maturity_rating;
 
         return $this;
     }
