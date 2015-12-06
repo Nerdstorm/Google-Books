@@ -62,6 +62,7 @@ class Volume implements EntityInterface
      * This information can depend on country (books may be public domain in one country but not in another, e.g.).
      *
      * @var AccessInfo
+     * @Annotations\JsonProperty("accessInfo", type="object", className="Nerdstorm\GoogleBooks\Entity\AccessInfo")
      */
     protected $access_info;
 

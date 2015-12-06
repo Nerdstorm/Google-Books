@@ -110,14 +110,14 @@ class AnnotationMapper
             $tree_property_name = $annotation->getName();
 
             // Ignore and continue when no data found for property being set
-            if (empty($data_tree[$tree_property_name])) {
+            if (!isset($data_tree[$tree_property_name])) {
                 continue;
             }
 
             // Attach child objects to tree
             switch ($annotation->getType()) {
                 case JsonProperty::TYPE_OBJECT:
-                    $class_name   = $annotation->getClassName();
+                    $class_name = $annotation->getClassName();
 
                     $child_object = new $class_name();
                     $this->accessor->setValue($object, $tree_property_name, $child_object);
@@ -141,6 +141,13 @@ class AnnotationMapper
                     continue 2;
                     break;
 
+                case JsonProperty::TYPE_ENUM:
+                    $class_name = $annotation->getClassName();
+                    $value      = $class_name::memberByValue($data_tree[$tree_property_name]);
+                    $this->accessor->setValue($object, $tree_property_name, $value);
+                    continue 2;
+                    break;
+
                 case JsonProperty::TYPE_ARRAY:
                     $sub_tree = $this->accessor->getValue($data_tree, "[$tree_property_name]");
                     $this->accessor->setValue($object, $tree_property_name, $sub_tree);
@@ -149,7 +156,7 @@ class AnnotationMapper
 
                 case JsonProperty::TYPE_DATETIME:
                     $datetime_string = $this->accessor->getValue($data_tree, "[$tree_property_name]");
-                    $datetime = new \DateTime($datetime_string);
+                    $datetime        = new \DateTime($datetime_string);
                     $this->accessor->setValue($object, $tree_property_name, $datetime);
                     continue 2;
                     break;
@@ -159,13 +166,20 @@ class AnnotationMapper
                     continue 2;
                     break;
 
+                case JsonProperty::TYPE_BOOL:
+                    $this->accessor->setValue($object, $tree_property_name, (bool) $data_tree[$tree_property_name]);
+                    continue 2;
+                    break;
+
                 case JsonProperty::TYPE_INT:
                     $this->accessor->setValue($object, $tree_property_name, (int) $data_tree[$tree_property_name]);
                     continue 2;
+                    break;
 
                 case JsonProperty::TYPE_FLOAT:
                     $this->accessor->setValue($object, $tree_property_name, (float) $data_tree[$tree_property_name]);
                     continue 2;
+                    break;
             }
         }
 
