@@ -2,6 +2,7 @@
 
 namespace Nerdstorm\GoogleBooks\Entity;
 
+use Nerdstorm\GoogleBooks\Annotations\Definition as Annotations;
 use Nerdstorm\GoogleBooks\Enum\AccessViewStatusEnum;
 
 /**
@@ -52,7 +53,7 @@ class AccessInfo implements EntityInterface
      * Values can be FULL_PURCHASED, FULL_PUBLIC_DOMAIN, SAMPLE or NONE. (In LITE projection.)
      *
      * @var AccessViewStatusEnum
-     * @Annotations\JsonProperty("accessViewStatus", type="object", className="Nerdstorm\GoogleBooks\Enum\AccessViewStatusEnum")
+     * @Annotations\JsonProperty("accessViewStatus", type="enum", className="Nerdstorm\GoogleBooks\Enum\AccessViewStatusEnum")
      */
     protected $access_view_status;
 
@@ -101,7 +102,7 @@ class AccessInfo implements EntityInterface
     }
 
     /**
-     * @return string
+     * @return ViewabilityEnum
      */
     public function getViewability()
     {
@@ -109,7 +110,7 @@ class AccessInfo implements EntityInterface
     }
 
     /**
-     * @param string $viewability
+     * @param ViewabilityEnum $viewability
      *
      * @return AccessInfo
      */
@@ -123,19 +124,19 @@ class AccessInfo implements EntityInterface
     /**
      * @return boolean
      */
-    public function isHasEpub()
+    public function hasEpub()
     {
         return $this->has_epub;
     }
 
     /**
-     * @param boolean $has_epub
+     * @param array $has_epub
      *
      * @return AccessInfo
      */
-    public function setHasEpub($has_epub)
+    public function setHasEpub(array $has_epub)
     {
-        $this->has_epub = $has_epub;
+        $this->has_epub = (bool) $has_epub['isAvailable'];
 
         return $this;
     }
@@ -143,19 +144,19 @@ class AccessInfo implements EntityInterface
     /**
      * @return boolean
      */
-    public function isHasPdf()
+    public function hasPdf()
     {
         return $this->has_pdf;
     }
 
     /**
-     * @param boolean $has_pdf
+     * @param array $has_pdf
      *
      * @return AccessInfo
      */
-    public function setHasPdf($has_pdf)
+    public function setHasPdf(array $has_pdf)
     {
-        $this->has_pdf = $has_pdf;
+        $this->has_pdf = (bool) $has_pdf['isAvailable'];
 
         return $this;
     }

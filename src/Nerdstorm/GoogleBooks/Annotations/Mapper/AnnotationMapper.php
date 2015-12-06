@@ -107,7 +107,8 @@ class AnnotationMapper
                 continue;
             }
 
-            $tree_property_name = $annotation->getName();
+            $tree_property_name  = $annotation->getName();
+            $class_property_name = $reflection_property->getName();
 
             // Ignore and continue when no data found for property being set
             if (!isset($data_tree[$tree_property_name])) {
@@ -120,7 +121,7 @@ class AnnotationMapper
                     $class_name = $annotation->getClassName();
 
                     $child_object = new $class_name();
-                    $this->accessor->setValue($object, $tree_property_name, $child_object);
+                    $this->accessor->setValue($object, $class_property_name, $child_object);
                     $sub_tree = $this->accessor->getValue($data_tree, "[$tree_property_name]");
 
                     // Recall the function for the child object
@@ -132,7 +133,7 @@ class AnnotationMapper
                 case JsonProperty::TYPE_OBJECTARRAY:
                     $class_name   = $annotation->getClassName();
                     $child_object = new $class_name();
-                    $this->accessor->setValue($object, $tree_property_name, $child_object);
+                    $this->accessor->setValue($object, $class_property_name, $child_object);
                     $sub_tree = $this->accessor->getValue($data_tree, "[$tree_property_name]");
 
                     // Recall the function for the child object
@@ -144,40 +145,40 @@ class AnnotationMapper
                 case JsonProperty::TYPE_ENUM:
                     $class_name = $annotation->getClassName();
                     $value      = $class_name::memberByValue($data_tree[$tree_property_name]);
-                    $this->accessor->setValue($object, $tree_property_name, $value);
+                    $this->accessor->setValue($object, $class_property_name, $value);
                     continue 2;
                     break;
 
                 case JsonProperty::TYPE_ARRAY:
                     $sub_tree = $this->accessor->getValue($data_tree, "[$tree_property_name]");
-                    $this->accessor->setValue($object, $tree_property_name, $sub_tree);
+                    $this->accessor->setValue($object, $class_property_name, $sub_tree);
                     continue 2;
                     break;
 
                 case JsonProperty::TYPE_DATETIME:
                     $datetime_string = $this->accessor->getValue($data_tree, "[$tree_property_name]");
                     $datetime        = new \DateTime($datetime_string);
-                    $this->accessor->setValue($object, $tree_property_name, $datetime);
+                    $this->accessor->setValue($object, $class_property_name, $datetime);
                     continue 2;
                     break;
 
                 case JsonProperty::TYPE_STRING:
-                    $this->accessor->setValue($object, $tree_property_name, (string) $data_tree[$tree_property_name]);
+                    $this->accessor->setValue($object, $class_property_name, (string) $data_tree[$tree_property_name]);
                     continue 2;
                     break;
 
                 case JsonProperty::TYPE_BOOL:
-                    $this->accessor->setValue($object, $tree_property_name, (bool) $data_tree[$tree_property_name]);
+                    $this->accessor->setValue($object, $class_property_name, (bool) $data_tree[$tree_property_name]);
                     continue 2;
                     break;
 
                 case JsonProperty::TYPE_INT:
-                    $this->accessor->setValue($object, $tree_property_name, (int) $data_tree[$tree_property_name]);
+                    $this->accessor->setValue($object, $class_property_name, (int) $data_tree[$tree_property_name]);
                     continue 2;
                     break;
 
                 case JsonProperty::TYPE_FLOAT:
-                    $this->accessor->setValue($object, $tree_property_name, (float) $data_tree[$tree_property_name]);
+                    $this->accessor->setValue($object, $class_property_name, (float) $data_tree[$tree_property_name]);
                     continue 2;
                     break;
             }

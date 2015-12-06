@@ -3,6 +3,8 @@
 namespace tests\Nerdstorm\GoogleBooks\Service;
 
 use Nerdstorm\GoogleBooks\Annotations\Mapper\AnnotationMapper;
+use Nerdstorm\GoogleBooks\Entity\AccessInfo;
+use Nerdstorm\GoogleBooks\Entity\Volume;
 
 class AnnotationMapperTest extends \PHPUnit_Framework_TestCase
 {
@@ -127,11 +129,15 @@ class AnnotationMapperTest extends \PHPUnit_Framework_TestCase
                     case 'Nerdstorm\GoogleBooks\Entity\VolumeDimensions':
                         $this->assertEquals((float) $json_obj['volumeInfo'][$key]['width'], $actual->getWidth());
                         $this->assertEquals((float) $json_obj['volumeInfo'][$key]['height'], $actual->getHeight());
-                        $this->assertEquals((float) $json_obj['volumeInfo'][$key]['thickness'], $actual->getThickness());
+                        $this->assertEquals(
+                            (float) $json_obj['volumeInfo'][$key]['thickness'], $actual->getThickness()
+                        );
                         break;
 
                     case 'Nerdstorm\GoogleBooks\Entity\VolumeImageLinks':
-                        $this->assertEquals($json_obj['volumeInfo'][$key]['smallThumbnail'], $actual->getSmallThumbnail());
+                        $this->assertEquals(
+                            $json_obj['volumeInfo'][$key]['smallThumbnail'], $actual->getSmallThumbnail()
+                        );
                         $this->assertEquals($json_obj['volumeInfo'][$key]['thumbnail'], $actual->getThumbnail());
                         break;
                 }
@@ -167,26 +173,23 @@ class AnnotationMapperTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function testSaleInfoEntityMapping()
+    public function testAccessInfoEntityMapping()
     {
         $json_obj = json_decode($this->book_volume, true);
-        $object   = $this->mapper->resolveEntity($json_obj['kind']);
+        /** @var Volume $object */
+        $object = $this->mapper->resolveEntity($json_obj['kind']);
+        $access_info = $json_obj['accessInfo'];
 
         // Get the mapped volume object
         $volume = $this->mapper->map($object, $json_obj);
 
-        foreach ($json_obj['saleInfo'] as $key => $value) {
-            if (!is_callable([$volume->getSaleInfo(), 'get' . ucfirst($key)])) {
+        foreach ($access_info as $key => $value) {
+            if (!is_callable([$volume->getAccessInfo(), 'get' . ucfirst($key)])) {
                 continue;
             }
 
-            $actual = call_user_func([$volume->getSaleInfo(), 'get' . ucfirst($key)]);
-
-            if ($actual instanceof \DateTime) {
-                $this->assertEquals(new \DateTime($json_obj['saleInfo'][$key]), $actual);
-            } else {
-                $this->assertEquals($json_obj['saleInfo'][$key], $actual);
-            }
+            $actual = call_user_func([$volume->getAccessInfo(), 'get' . ucfirst($key)]);
+            $this->assertEquals($access_info[$key], $actual);
         }
     }
 

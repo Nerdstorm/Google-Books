@@ -13,10 +13,10 @@ use Eloquent\Enumeration\AbstractEnumeration;
  * some portion of the volume to be viewed publicly, without purchase. This can apply to eBooks as
  * well as non-eBooks. Public domain books will always have a value of ALL_PAGES.
  */
-final class OrderByEnum extends AbstractEnumeration
+final class ViewabilityEnum extends AbstractEnumeration
 {
-    const PARTIAL   = 'partial';
-    const ALL_PAGES = 'all_pages';
-    const NO_PAGES  = 'no_pages';
-    const UNKNOWN   = 'unknown';
+    const PARTIAL   = 'PARTIAL';
+    const ALL_PAGES = 'ALL_PAGES';
+    const NO_PAGES  = 'NO_PAGES';
+    const UNKNOWN   = 'UNKNOWN';
 }
