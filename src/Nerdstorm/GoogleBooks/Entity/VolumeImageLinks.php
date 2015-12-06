@@ -15,6 +15,7 @@ class VolumeImageLinks implements EntityInterface
      * Image link for thumbnail size (width of ~128 pixels). (in LITE projection)
      *
      * @var string
+     * @Annotations\JsonProperty("thumbnail", type="string")
      */
     protected $thumbnail;
 
@@ -22,6 +23,7 @@ class VolumeImageLinks implements EntityInterface
      * Image link for small size (width of ~300 pixels). (in LITE projection)
      *
      * @var string
+     * @Annotations\JsonProperty("small", type="string")
      */
     protected $small;
 
@@ -37,6 +39,7 @@ class VolumeImageLinks implements EntityInterface
      * Image link for large size (width of ~800 pixels). (in LITE projection)
      *
      * @var string
+     * @Annotations\JsonProperty("large", type="string")
      */
     protected $large;
 
@@ -52,6 +55,7 @@ class VolumeImageLinks implements EntityInterface
      * Image link for extra large size (width of ~1280 pixels). (in LITE projection)
      *
      * @var string
+     * @Annotations\JsonProperty("extraLarge", type="string")
      */
     protected $extra_large;
 

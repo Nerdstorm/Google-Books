@@ -11,7 +11,6 @@ use Nerdstorm\GoogleBooks\Annotations\Definition as Annotations;
  */
 class VolumeInfo implements EntityInterface
 {
-
     /**
      * Volume title. (In LITE projection.)
      *
@@ -82,7 +81,7 @@ class VolumeInfo implements EntityInterface
      * Physical dimensions of this volume.
      *
      * @var VolumeDimensions
-     * @Annotations\JsonProperty("dimensions", type="object", classType="Nerdstorm\GoogleBooks\Entity\VolumeDimensions")
+     * @Annotations\JsonProperty("dimensions", type="object", className="Nerdstorm\GoogleBooks\Entity\VolumeDimensions")
      */
     protected $dimensions;
 
@@ -105,8 +104,8 @@ class VolumeInfo implements EntityInterface
     /**
      * The mean review rating for this volume. (min = 1.0, max = 5.0)
      *
-     * @var double
-     * @Annotations\JsonProperty("averageRating", type="int")
+     * @var float
+     * @Annotations\JsonProperty("averageRating", type="float")
      */
     protected $average_rating;
 

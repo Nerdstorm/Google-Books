@@ -118,6 +118,7 @@ class AnnotationMapper
             switch ($annotation->getType()) {
                 case JsonProperty::TYPE_OBJECT:
                     $class_name   = $annotation->getClassName();
+
                     $child_object = new $class_name();
                     $this->accessor->setValue($object, $tree_property_name, $child_object);
                     $sub_tree = $this->accessor->getValue($data_tree, "[$tree_property_name]");
@@ -153,8 +154,18 @@ class AnnotationMapper
                     continue 2;
                     break;
 
-                default:
-                    $this->accessor->setValue($object, $tree_property_name, $data_tree[$tree_property_name]);
+                case JsonProperty::TYPE_STRING:
+                    $this->accessor->setValue($object, $tree_property_name, (string) $data_tree[$tree_property_name]);
+                    continue 2;
+                    break;
+
+                case JsonProperty::TYPE_INT:
+                    $this->accessor->setValue($object, $tree_property_name, (int) $data_tree[$tree_property_name]);
+                    continue 2;
+
+                case JsonProperty::TYPE_FLOAT:
+                    $this->accessor->setValue($object, $tree_property_name, (float) $data_tree[$tree_property_name]);
+                    continue 2;
             }
         }
 

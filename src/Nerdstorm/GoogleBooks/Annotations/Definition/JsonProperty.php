@@ -18,6 +18,7 @@ class JsonProperty
     const TYPE_OBJECTARRAY = 'object[]';
     const TYPE_ARRAY       = 'array';
     const TYPE_INT         = 'int';
+    const TYPE_FLOAT       = 'float';
     const TYPE_STRING      = 'string';
     const TYPE_BOOL        = 'bool';
     const TYPE_DATETIME    = 'datetime';

@@ -2,6 +2,8 @@
 
 namespace Nerdstorm\GoogleBooks\Entity;
 
+use Nerdstorm\GoogleBooks\Annotations\Definition as Annotations;
+
 /**
  * Class VolumeDimensions
  *
@@ -12,26 +14,29 @@ class VolumeDimensions implements EntityInterface
     /**
      * Height or length of this volume (in cm).
      *
-     * @var int
+     * @var float
+     * @Annotations\JsonProperty("height", type="float")
      */
     protected $height;
 
     /**
      * Width of this volume (in cm).
      *
-     * @var int
+     * @var float
+     * @Annotations\JsonProperty("width", type="float")
      */
-    protected $weight;
+    protected $width;
 
     /**
      * Thickness of this volume (in cm).
      *
-     * @var int
+     * @var float
+     * @Annotations\JsonProperty("thickness", type="float")
      */
     protected $thickness;
 
     /**
-     * @return int
+     * @return float
      */
     public function getHeight()
     {
@@ -39,7 +44,7 @@ class VolumeDimensions implements EntityInterface
     }
 
     /**
-     * @param int $height
+     * @param float $height
      *
      * @return VolumeDimensions
      */
@@ -51,27 +56,27 @@ class VolumeDimensions implements EntityInterface
     }
 
     /**
-     * @return int
+     * @return float
      */
-    public function getWeight()
+    public function getWidth()
     {
-        return $this->weight;
+        return $this->width;
     }
 
     /**
-     * @param int $weight
+     * @param float $width
      *
      * @return VolumeDimensions
      */
-    public function setWeight($weight)
+    public function setWidth($width)
     {
-        $this->weight = $weight;
+        $this->width = $width;
 
         return $this;
     }
 
     /**
-     * @return int
+     * @return float
      */
     public function getThickness()
     {
@@ -79,7 +84,7 @@ class VolumeDimensions implements EntityInterface
     }
 
     /**
-     * @param int $thickness
+     * @param float $thickness
      *
      * @return VolumeDimensions
      */
