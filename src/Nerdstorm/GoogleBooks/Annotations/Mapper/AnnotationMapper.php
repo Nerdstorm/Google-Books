@@ -126,7 +126,6 @@ class AnnotationMapper
 
                     // Recall the function for the child object
                     $this->map($child_object, $sub_tree);
-
                     continue 2;
                     break;
 
@@ -138,7 +137,6 @@ class AnnotationMapper
 
                     // Recall the function for the child object
                     $this->map($child_object, $sub_tree);
-
                     continue 2;
                     break;
 

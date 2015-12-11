@@ -2,6 +2,7 @@
 
 namespace tests\Nerdstorm\GoogleBooks\Service;
 
+use Eloquent\Enumeration\EnumerationInterface;
 use Nerdstorm\GoogleBooks\Annotations\Mapper\AnnotationMapper;
 use Nerdstorm\GoogleBooks\Entity\AccessInfo;
 use Nerdstorm\GoogleBooks\Entity\Volume;
@@ -189,7 +190,7 @@ class AnnotationMapperTest extends \PHPUnit_Framework_TestCase
             }
 
             $actual = call_user_func([$volume->getAccessInfo(), 'get' . ucfirst($key)]);
-            $this->assertEquals($access_info[$key], $actual);
+            $this->assertEquals($value, $actual);
         }
     }
 
