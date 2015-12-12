@@ -5,6 +5,8 @@ namespace tests\Nerdstorm\GoogleBooks\Service;
 use Eloquent\Enumeration\EnumerationInterface;
 use Nerdstorm\GoogleBooks\Annotations\Mapper\AnnotationMapper;
 use Nerdstorm\GoogleBooks\Entity\AccessInfo;
+use Nerdstorm\GoogleBooks\Entity\BookPrice;
+use Nerdstorm\GoogleBooks\Entity\EntityInterface;
 use Nerdstorm\GoogleBooks\Entity\Volume;
 
 class AnnotationMapperTest extends \PHPUnit_Framework_TestCase
@@ -62,7 +64,16 @@ class AnnotationMapperTest extends \PHPUnit_Framework_TestCase
        "saleInfo":{
           "country":"AU",
           "saleability":"NOT_FOR_SALE",
-          "isEbook":false
+          "isEbook":false,
+          "listPrice": {
+            "amount": 11.99,
+            "currencyCode": "USD"
+          },
+          "retailPrice": {
+            "amount": 11.99,
+            "currencyCode": "USD"
+          },
+          "buyLink": "https://books.google.com/books?id=zyTCAlFPjgYC&ie=ISO-8859-1&buy=&source=gbs_api"
        },
        "accessInfo":{
           "country":"AU",
@@ -168,6 +179,9 @@ class AnnotationMapperTest extends \PHPUnit_Framework_TestCase
 
             if ($actual instanceof \DateTime) {
                 $this->assertEquals(new \DateTime($json_obj['saleInfo'][$key]), $actual);
+            } elseif ($actual instanceof BookPrice) {
+                $this->assertEquals($json_obj['saleInfo'][$key]['amount'], $actual->getAmount());
+                $this->assertEquals($json_obj['saleInfo'][$key]['currencyCode'], $actual->getCurrencyCode());
             } else {
                 $this->assertEquals($json_obj['saleInfo'][$key], $actual);
             }

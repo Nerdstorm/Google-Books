@@ -2,6 +2,8 @@
 
 namespace Nerdstorm\GoogleBooks\Entity;
 
+use Nerdstorm\GoogleBooks\Annotations\Definition as Annotations;
+
 /**
  * Class BookPrice
  *
@@ -13,6 +15,7 @@ class BookPrice implements EntityInterface
      * Amount in the currency listed below. (In LITE projection.)
      *
      * @var double
+     * @Annotations\JsonProperty("amount", type="float")
      */
     protected $amount;
 
@@ -20,6 +23,7 @@ class BookPrice implements EntityInterface
      * An ISO 4217, three-letter currency code. (In LITE projection.)
      *
      * @var string
+     * @Annotations\JsonProperty("currencyCode", type="string")
      */
     protected $currency_code;
 

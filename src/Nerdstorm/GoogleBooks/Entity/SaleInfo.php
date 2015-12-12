@@ -42,7 +42,7 @@ class SaleInfo implements EntityInterface
      * Suggested retail price. (in LITE projection)
      *
      * @var BookPrice
-     * @Annotations\JsonProperty("listPrice", type="float")
+     * @Annotations\JsonProperty("listPrice", type="object", className="Nerdstorm\GoogleBooks\Entity\BookPrice")
      */
     protected $list_price;
 
@@ -51,7 +51,7 @@ class SaleInfo implements EntityInterface
      * price unless there are offers or discounts on this volume. (in LITE projection).
      *
      * @var BookPrice
-     * @Annotations\JsonProperty("retailPrice", type="float")
+     * @Annotations\JsonProperty("retailPrice", type="object", className="Nerdstorm\GoogleBooks\Entity\BookPrice")
      */
     protected $retail_price;
 
