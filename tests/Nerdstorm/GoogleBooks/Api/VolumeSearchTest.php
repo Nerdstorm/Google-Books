@@ -108,7 +108,7 @@ class VolumeSearchTest extends \PHPUnit_Framework_TestCase
         $query = new VolumeSearchQuery('Flowers');
 
         /** @var Response $response */
-        $response = $this->volume_search->volumesList($query, true, null, null, 0, 10, OrderByEnum::NEWEST());
+        $response = $this->volume_search->volumesList($query, true, null, null, 0, 5, OrderByEnum::NEWEST());
         $this->assertEquals(200, $response->getStatusCode());
 
         $json = (string) $response->getBody();
@@ -116,7 +116,8 @@ class VolumeSearchTest extends \PHPUnit_Framework_TestCase
 
         $publish_dates = [];
         foreach ($data['items'] as $volume) {
-            $publish_dates[] = strtotime($volume['volumeInfo']['publishedDate']);
+            $datetime = new \DateTime($volume['volumeInfo']['publishedDate']);
+            $publish_dates[] = $datetime->getTimestamp();
         }
 
         $ordered_dates = $publish_dates;
@@ -138,7 +139,9 @@ class VolumeSearchTest extends \PHPUnit_Framework_TestCase
          * Filter Books
          */
         /** @var Response $response */
-        $response = $this->volume_search->volumesList($query, false, null, null, 0, 10, null, PublicationTypeEnum::BOOKS());
+        $response = $this->volume_search->volumesList(
+            $query, false, null, null, 0, 10, null, PublicationTypeEnum::BOOKS()
+        );
         $this->assertEquals(200, $response->getStatusCode());
 
         $json = (string) $response->getBody();
@@ -152,7 +155,9 @@ class VolumeSearchTest extends \PHPUnit_Framework_TestCase
          * Filter Magazines
          */
         /** @var Response $response */
-        $response = $this->volume_search->volumesList($query, false, null, null, 0, 10, null, PublicationTypeEnum::MAGAZINES());
+        $response = $this->volume_search->volumesList(
+            $query, false, null, null, 0, 10, null, PublicationTypeEnum::MAGAZINES()
+        );
         $this->assertEquals(200, $response->getStatusCode());
 
         $json = (string) $response->getBody();

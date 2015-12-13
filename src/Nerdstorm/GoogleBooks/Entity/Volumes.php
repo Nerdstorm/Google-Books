@@ -25,7 +25,7 @@ class Volumes implements EntityInterface
      * Array of book volume objects.
      *
      * @var Volume[]
-     * @Annotations\JsonProperty("items", type="object", className="Nerdstorm\GoogleBooks\Entity\Volume")
+     * @Annotations\JsonProperty("items", type="object[]", className="Nerdstorm\GoogleBooks\Entity\Volume")
      */
     protected $items;
 

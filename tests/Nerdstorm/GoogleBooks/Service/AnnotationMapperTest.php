@@ -2,11 +2,8 @@
 
 namespace tests\Nerdstorm\GoogleBooks\Service;
 
-use Eloquent\Enumeration\EnumerationInterface;
 use Nerdstorm\GoogleBooks\Annotations\Mapper\AnnotationMapper;
-use Nerdstorm\GoogleBooks\Entity\AccessInfo;
 use Nerdstorm\GoogleBooks\Entity\BookPrice;
-use Nerdstorm\GoogleBooks\Entity\EntityInterface;
 use Nerdstorm\GoogleBooks\Entity\Volume;
 
 class AnnotationMapperTest extends \PHPUnit_Framework_TestCase
@@ -192,7 +189,7 @@ class AnnotationMapperTest extends \PHPUnit_Framework_TestCase
     {
         $json_obj = json_decode($this->book_volume, true);
         /** @var Volume $object */
-        $object = $this->mapper->resolveEntity($json_obj['kind']);
+        $object      = $this->mapper->resolveEntity($json_obj['kind']);
         $access_info = $json_obj['accessInfo'];
 
         // Get the mapped volume object
