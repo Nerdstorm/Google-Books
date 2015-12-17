@@ -103,7 +103,7 @@ class AnnotationMapperTest extends \PHPUnit_Framework_TestCase
        "kind": "books#volumes",
        "totalItems": 112,
        "items": [
-           {$this->book_volume},
+           {$this->book_volume}
        ]
     }
 JSON;
@@ -234,7 +234,6 @@ JSON;
             $actual = call_user_func([$volumes, 'get' . ucfirst($key)]);
 
             if (is_array($json_obj[$key])) {
-                var_dump($object->getItems());
                 continue;
             }
 
