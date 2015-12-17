@@ -62,7 +62,7 @@ class Volumes implements EntityInterface
      *
      * @return Volumes
      */
-    public function setItems($items)
+    public function setItems(array $items)
     {
         $this->items = $items;
 

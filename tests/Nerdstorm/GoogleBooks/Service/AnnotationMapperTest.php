@@ -4,7 +4,7 @@ namespace tests\Nerdstorm\GoogleBooks\Service;
 
 use Nerdstorm\GoogleBooks\Annotations\Mapper\AnnotationMapper;
 use Nerdstorm\GoogleBooks\Entity\BookPrice;
-use Nerdstorm\GoogleBooks\Entity\Volume;
+use Nerdstorm\GoogleBooks\Entity\Volumes;
 
 class AnnotationMapperTest extends \PHPUnit_Framework_TestCase
 {
@@ -91,10 +91,23 @@ class AnnotationMapperTest extends \PHPUnit_Framework_TestCase
     }
     ';
 
+    protected $book_volumes;
+
     public function setup()
     {
         /** @var AnnotationMapper mapper */
         $this->mapper = new AnnotationMapper();
+
+        $this->book_volumes = <<<JSON
+    {
+       "kind": "books#volumes",
+       "totalItems": 112,
+       "items": [
+           {$this->book_volume},
+       ]
+    }
+JSON;
+
     }
 
     public function testVolumeEntityMapping()
@@ -188,7 +201,8 @@ class AnnotationMapperTest extends \PHPUnit_Framework_TestCase
     public function testAccessInfoEntityMapping()
     {
         $json_obj = json_decode($this->book_volume, true);
-        /** @var Volume $object */
+
+        /** @var Volumes $object */
         $object      = $this->mapper->resolveEntity($json_obj['kind']);
         $access_info = $json_obj['accessInfo'];
 
@@ -205,4 +219,26 @@ class AnnotationMapperTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    public function testVolumesEntityMapping()
+    {
+        $json_obj = json_decode($this->book_volumes, true);
+
+        /** @var Volumes $object */
+        $object = $this->mapper->resolveEntity($json_obj['kind']);
+        unset($json_obj['kind']);
+
+        // Get the mapped volume object
+        $volumes = $this->mapper->map($object, $json_obj);
+
+        foreach ($json_obj as $key => $value) {
+            $actual = call_user_func([$volumes, 'get' . ucfirst($key)]);
+
+            if (is_array($json_obj[$key])) {
+                var_dump($object->getItems());
+                continue;
+            }
+
+            $this->assertEquals($json_obj[$key], $actual);
+        }
+    }
 }

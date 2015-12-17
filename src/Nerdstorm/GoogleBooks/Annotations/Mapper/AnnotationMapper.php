@@ -118,8 +118,7 @@ class AnnotationMapper
             // Attach child objects to tree
             switch ($annotation->getType()) {
                 case JsonProperty::TYPE_OBJECT:
-                    $class_name = $annotation->getClassName();
-
+                    $class_name   = $annotation->getClassName();
                     $child_object = new $class_name();
                     $this->accessor->setValue($object, $class_property_name, $child_object);
                     $sub_tree = $this->accessor->getValue($data_tree, "[$tree_property_name]");
@@ -130,13 +129,17 @@ class AnnotationMapper
                     break;
 
                 case JsonProperty::TYPE_OBJECTARRAY:
+                    $object_array = [];
                     $class_name   = $annotation->getClassName();
                     $child_object = new $class_name();
-                    $this->accessor->setValue($object, $class_property_name, $child_object);
                     $sub_tree = $this->accessor->getValue($data_tree, "[$tree_property_name]");
 
                     // Recall the function for the child object
-                    $this->map($child_object, $sub_tree);
+                    foreach ($sub_tree as $child_sub_tree) {
+                        $object_array[] = $this->map($child_object, $child_sub_tree);
+                    }
+
+                    $this->accessor->setValue($object, $class_property_name, $object_array);
                     continue 2;
                     break;
 
