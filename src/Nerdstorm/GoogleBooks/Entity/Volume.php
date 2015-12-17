@@ -2,19 +2,24 @@
 
 namespace Nerdstorm\GoogleBooks\Entity;
 
+use Nerdstorm\GoogleBooks\Annotations\Definition as Annotations;
+
 /**
  * Class Volume
  *
  * A Volume represents information that Google Books hosts about a book or a magazine. It contains metadata,
  * such as title and author, as well as personalized data, such as whether or not it has been purchased.
  * (Volume fields that are available in LITE projection are noted below).
+ *
+ * @Annotations\Object("books#volume")
  */
-class Volume
+class Volume implements EntityInterface
 {
     /**
      * Unique identifier for a volume
      *
      * @var string
+     * @Annotations\JsonProperty("id", type="string")
      */
     protected $id;
 
@@ -22,6 +27,7 @@ class Volume
      * Opaque identifier for a specific version of a volume resource
      *
      * @var string
+     * @Annotations\JsonProperty("etag", type="string")
      */
     protected $etag;
 
@@ -29,6 +35,7 @@ class Volume
      * URL to this resource
      *
      * @var string
+     * @Annotations\JsonProperty("selfLink", type="string")
      */
     protected $self_link;
 
@@ -36,6 +43,7 @@ class Volume
      * General volume information
      *
      * @var VolumeInfo
+     * @Annotations\JsonProperty("volumeInfo", type="object", className="Nerdstorm\GoogleBooks\Entity\VolumeInfo")
      */
     protected $volume_info;
 
@@ -45,6 +53,7 @@ class Volume
      * not be for sale in certain countries)
      *
      * @var SaleInfo
+     * @Annotations\JsonProperty("saleInfo", type="object", className="Nerdstorm\GoogleBooks\Entity\SaleInfo")
      */
     protected $sale_info;
 
@@ -53,6 +62,7 @@ class Volume
      * This information can depend on country (books may be public domain in one country but not in another, e.g.).
      *
      * @var AccessInfo
+     * @Annotations\JsonProperty("accessInfo", type="object", className="Nerdstorm\GoogleBooks\Entity\AccessInfo")
      */
     protected $access_info;
 

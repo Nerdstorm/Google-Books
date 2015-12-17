@@ -2,18 +2,20 @@
 
 namespace Nerdstorm\GoogleBooks\Entity;
 
+use Nerdstorm\GoogleBooks\Annotations\Definition as Annotations;
+
 /**
  * Class VolumeInfo
  *
  * General volume information.
  */
-class VolumeInfo
+class VolumeInfo implements EntityInterface
 {
-
     /**
      * Volume title. (In LITE projection.)
      *
      * @var string
+     * @Annotations\JsonProperty("title", type="string")
      */
     protected $title;
 
@@ -21,6 +23,7 @@ class VolumeInfo
      * Volume subtitle. (In LITE projection.)
      *
      * @var string
+     * @Annotations\JsonProperty("subtitle", type="string")
      */
     protected $subtitle;
 
@@ -28,6 +31,7 @@ class VolumeInfo
      * The names of the authors and/or editors for this volume. (In LITE projection)
      *
      * @var string[]
+     * @Annotations\JsonProperty("authors", type="array")
      */
     protected $authors;
 
@@ -35,6 +39,7 @@ class VolumeInfo
      * Publisher of this volume. (In LITE projection.)
      *
      * @var string
+     * @Annotations\JsonProperty("publisher", type="string")
      */
     protected $publisher;
 
@@ -42,6 +47,7 @@ class VolumeInfo
      * Date of publication. (In LITE projection.)
      *
      * @var \DateTime
+     * @Annotations\JsonProperty("publishedDate", type="datetime")
      */
     protected $published_date;
 
@@ -50,6 +56,7 @@ class VolumeInfo
      * formatting elements, such as b, i, and br tags. (in LITE projection)
      *
      * @var string
+     * @Annotations\JsonProperty("description", type="string")
      */
     protected $description;
 
@@ -58,6 +65,7 @@ class VolumeInfo
      * Identifier type. Possible values are ISBN_10, ISBN_13, ISSN and OTHER.
      *
      * @var array
+     * @Annotations\JsonProperty("industryIdentifier", type="array")
      */
     protected $industry_identifiers;
 
@@ -65,6 +73,7 @@ class VolumeInfo
      * Total number of pages.
      *
      * @var int
+     * @Annotations\JsonProperty("pageCount", type="int")
      */
     protected $page_count;
 
@@ -72,6 +81,7 @@ class VolumeInfo
      * Physical dimensions of this volume.
      *
      * @var VolumeDimensions
+     * @Annotations\JsonProperty("dimensions", type="object", className="Nerdstorm\GoogleBooks\Entity\VolumeDimensions")
      */
     protected $dimensions;
 
@@ -79,6 +89,7 @@ class VolumeInfo
      * Type of publication of this volume. Possible values are BOOK or MAGAZINE.
      *
      * @var string
+     * @Annotations\JsonProperty("printType", type="string")
      */
     protected $print_type;
 
@@ -86,13 +97,15 @@ class VolumeInfo
      * A list of subject categories, such as "Fiction", "Suspense", etc.
      *
      * @var array
+     * @Annotations\JsonProperty("categories", type="array")
      */
     protected $categories;
 
     /**
      * The mean review rating for this volume. (min = 1.0, max = 5.0)
      *
-     * @var double
+     * @var float
+     * @Annotations\JsonProperty("averageRating", type="float")
      */
     protected $average_rating;
 
@@ -100,13 +113,23 @@ class VolumeInfo
      * The number of review ratings for this volume.
      *
      * @var int
+     * @Annotations\JsonProperty("ratingsCount", type="int")
      */
     protected $ratings_count;
+
+    /**
+     * Maturity rating.
+     *
+     * @var int
+     * @Annotations\JsonProperty("maturityRating", type="string")
+     */
+    protected $maturity_rating;
 
     /**
      * An identifier for the version of the volume content (text & images). (In LITE projection)
      *
      * @var string
+     * @Annotations\JsonProperty("contentVersion", type="string")
      */
     protected $content_version;
 
@@ -114,6 +137,7 @@ class VolumeInfo
      * A list of image links for all the sizes that are available. (in LITE projection)
      *
      * @var VolumeImageLinks
+     * @Annotations\JsonProperty("imageLinks", type="object", className="Nerdstorm\GoogleBooks\Entity\VolumeImageLinks")
      */
     protected $image_links;
 
@@ -121,6 +145,7 @@ class VolumeInfo
      * Best language for this volume (based on content). It is the two-letter ISO 639-1 code such as 'fr', 'en', etc.
      *
      * @var string
+     * @Annotations\JsonProperty("language", type="string")
      */
     protected $language;
 
@@ -129,6 +154,7 @@ class VolumeInfo
      * It will be the category from the categories list returned below that has the highest weight.
      *
      * @var string
+     * @Annotations\JsonProperty("mainCategory", type="string")
      */
     protected $main_category;
 
@@ -136,6 +162,7 @@ class VolumeInfo
      * URL to preview this volume on the Google Books site.
      *
      * @var string
+     * @Annotations\JsonProperty("previewLink", type="string")
      */
     protected $preview_link;
 
@@ -415,6 +442,26 @@ class VolumeInfo
     public function setRatingsCount($ratings_count)
     {
         $this->ratings_count = $ratings_count;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMaturityRating()
+    {
+        return $this->maturity_rating;
+    }
+
+    /**
+     * @param int $maturity_rating
+     *
+     * @return VolumeInfo
+     */
+    public function setMaturityRating($maturity_rating)
+    {
+        $this->maturity_rating = $maturity_rating;
 
         return $this;
     }

@@ -2,6 +2,7 @@
 
 namespace Nerdstorm\GoogleBooks\Entity;
 
+use Nerdstorm\GoogleBooks\Annotations\Definition as Annotations;
 use Nerdstorm\GoogleBooks\Enum\AccessViewStatusEnum;
 
 /**
@@ -10,12 +11,13 @@ use Nerdstorm\GoogleBooks\Enum\AccessViewStatusEnum;
  * Any information about a volume related to reading or obtaining that volume text.
  * This information can depend on country (books may be public domain in one country but not in another, e.g.).
  */
-class AccessInfo
+class AccessInfo implements EntityInterface
 {
     /**
      * The two-letter ISO_3166-1 country code for which this access information is valid. (In LITE projection.)
      *
      * @var string
+     * @Annotations\JsonProperty("country", type="string")
      */
     protected $country;
 
@@ -26,6 +28,7 @@ class AccessInfo
      * well as non-eBooks. Public domain books will always have a value of ALL_PAGES.
      *
      * @var string
+     * @Annotations\JsonProperty("viewability", type="enum", className="Nerdstorm\GoogleBooks\Enum\ViewabilityEnum")
      */
     protected $viewability;
 
@@ -33,6 +36,7 @@ class AccessInfo
      * Book volume has a EPUB version
      *
      * @var bool
+     * @Annotations\JsonProperty("epub", type="array")
      */
     protected $has_epub;
 
@@ -40,6 +44,7 @@ class AccessInfo
      * Book volume has a PDF version
      *
      * @var bool
+     * @Annotations\JsonProperty("pdf", type="array")
      */
     protected $has_pdf;
 
@@ -48,6 +53,7 @@ class AccessInfo
      * Values can be FULL_PURCHASED, FULL_PUBLIC_DOMAIN, SAMPLE or NONE. (In LITE projection.)
      *
      * @var AccessViewStatusEnum
+     * @Annotations\JsonProperty("accessViewStatus", type="enum", className="Nerdstorm\GoogleBooks\Enum\AccessViewStatusEnum")
      */
     protected $access_view_status;
 
@@ -55,6 +61,7 @@ class AccessInfo
      * Whether this volume can be embedded in a viewport using the Embedded Viewer API.
      *
      * @var bool
+     * @Annotations\JsonProperty("embeddable", type="bool")
      */
     protected $embeddable;
 
@@ -62,6 +69,7 @@ class AccessInfo
      * URL to view information about this volume on the Google Books site. (In LITE projection)
      *
      * @var string
+     * @Annotations\JsonProperty("publicDomain", type="string")
      */
     protected $public_domain;
 
@@ -69,6 +77,7 @@ class AccessInfo
      * URL to read this volume on the Google Books site. Link will not allow users to read non-viewable volumes.
      *
      * @var string
+     * @Annotations\JsonProperty("webReaderLink", type="string")
      */
     protected $web_reader_link;
 
@@ -93,7 +102,7 @@ class AccessInfo
     }
 
     /**
-     * @return string
+     * @return ViewabilityEnum
      */
     public function getViewability()
     {
@@ -101,7 +110,7 @@ class AccessInfo
     }
 
     /**
-     * @param string $viewability
+     * @param ViewabilityEnum $viewability
      *
      * @return AccessInfo
      */
@@ -115,19 +124,19 @@ class AccessInfo
     /**
      * @return boolean
      */
-    public function isHasEpub()
+    public function hasEpub()
     {
         return $this->has_epub;
     }
 
     /**
-     * @param boolean $has_epub
+     * @param array $has_epub
      *
      * @return AccessInfo
      */
-    public function setHasEpub($has_epub)
+    public function setHasEpub(array $has_epub)
     {
-        $this->has_epub = $has_epub;
+        $this->has_epub = (bool) $has_epub['isAvailable'];
 
         return $this;
     }
@@ -135,19 +144,19 @@ class AccessInfo
     /**
      * @return boolean
      */
-    public function isHasPdf()
+    public function hasPdf()
     {
         return $this->has_pdf;
     }
 
     /**
-     * @param boolean $has_pdf
+     * @param array $has_pdf
      *
      * @return AccessInfo
      */
-    public function setHasPdf($has_pdf)
+    public function setHasPdf(array $has_pdf)
     {
-        $this->has_pdf = $has_pdf;
+        $this->has_pdf = (bool) $has_pdf['isAvailable'];
 
         return $this;
     }

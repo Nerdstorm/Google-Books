@@ -2,17 +2,20 @@
 
 namespace Nerdstorm\GoogleBooks\Entity;
 
+use Nerdstorm\GoogleBooks\Annotations\Definition as Annotations;
+
 /**
  * Class VolumeImageLinks
  *
  * A list of image links for all the sizes that are available. (in LITE projection)
  */
-class VolumeImageLinks
+class VolumeImageLinks implements EntityInterface
 {
     /**
      * Image link for thumbnail size (width of ~128 pixels). (in LITE projection)
      *
      * @var string
+     * @Annotations\JsonProperty("thumbnail", type="string")
      */
     protected $thumbnail;
 
@@ -20,6 +23,7 @@ class VolumeImageLinks
      * Image link for small size (width of ~300 pixels). (in LITE projection)
      *
      * @var string
+     * @Annotations\JsonProperty("small", type="string")
      */
     protected $small;
 
@@ -27,6 +31,7 @@ class VolumeImageLinks
      * Image link for medium size (width of ~575 pixels). (in LITE projection)
      *
      * @var string
+     * @Annotations\JsonProperty("medium", type="string")
      */
     protected $medium;
 
@@ -34,6 +39,7 @@ class VolumeImageLinks
      * Image link for large size (width of ~800 pixels). (in LITE projection)
      *
      * @var string
+     * @Annotations\JsonProperty("large", type="string")
      */
     protected $large;
 
@@ -41,6 +47,7 @@ class VolumeImageLinks
      * Image link for small thumbnail size (width of ~80 pixels). (in LITE projection)
      *
      * @var string
+     * @Annotations\JsonProperty("smallThumbnail", type="string")
      */
     protected $small_thumbnail;
 
@@ -48,6 +55,7 @@ class VolumeImageLinks
      * Image link for extra large size (width of ~1280 pixels). (in LITE projection)
      *
      * @var string
+     * @Annotations\JsonProperty("extraLarge", type="string")
      */
     protected $extra_large;
 

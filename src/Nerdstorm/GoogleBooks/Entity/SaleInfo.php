@@ -2,7 +2,7 @@
 
 namespace Nerdstorm\GoogleBooks\Entity;
 
-use Nerdstorm\GoogleBooks\Enum\SaleabilityEnum;
+use Nerdstorm\GoogleBooks\Annotations\Definition as Annotations;
 
 /**
  * Class SaleInfo
@@ -11,12 +11,13 @@ use Nerdstorm\GoogleBooks\Enum\SaleabilityEnum;
  * This information can depend on the country where the request
  * originates from (i.e. books may not be for sale in certain countries).
  */
-class SaleInfo
+class SaleInfo implements EntityInterface
 {
     /**
      * The two-letter ISO_3166-1 country code for which this sale information is valid.
      *
      * @var string
+     * @Annotations\JsonProperty("country", type="string")
      */
     protected $country;
 
@@ -25,6 +26,7 @@ class SaleInfo
      * country listed above. Possible values are
      *
      * @var SaleabilityEnum
+     * @Annotations\JsonProperty("saleability", type="enum", className="Nerdstorm\GoogleBooks\Enum\SaleabilityEnum")
      */
     protected $saleability;
 
@@ -32,13 +34,15 @@ class SaleInfo
      * Whether or not this volume is an eBook (can be added to the My eBooks shelf).
      *
      * @var bool
+     * @Annotations\JsonProperty("isEbook", type="bool")
      */
-    protected $is_book;
+    protected $is_ebook;
 
     /**
      * Suggested retail price. (in LITE projection)
      *
      * @var BookPrice
+     * @Annotations\JsonProperty("listPrice", type="object", className="Nerdstorm\GoogleBooks\Entity\BookPrice")
      */
     protected $list_price;
 
@@ -47,6 +51,7 @@ class SaleInfo
      * price unless there are offers or discounts on this volume. (in LITE projection).
      *
      * @var BookPrice
+     * @Annotations\JsonProperty("retailPrice", type="object", className="Nerdstorm\GoogleBooks\Entity\BookPrice")
      */
     protected $retail_price;
 
@@ -54,6 +59,7 @@ class SaleInfo
      * URL to purchase this volume on the Google Books site. (in LITE projection).
      *
      * @var string
+     * @Annotations\JsonProperty("buyLink", type="string")
      */
     protected $buy_link;
 
@@ -61,6 +67,7 @@ class SaleInfo
      * The date on which this book is available for sale.
      *
      * @var \DateTime
+     * @Annotations\JsonProperty("onSaleDate", type="datetime")
      */
     protected $on_sale_date;
 
@@ -107,19 +114,19 @@ class SaleInfo
     /**
      * @return boolean
      */
-    public function isBook()
+    public function getIsEBook()
     {
-        return $this->is_book;
+        return $this->is_ebook;
     }
 
     /**
-     * @param boolean $is_book
+     * @param boolean $is_ebook
      *
      * @return SaleInfo
      */
-    public function setIsBook($is_book)
+    public function setIsEBook($is_ebook)
     {
-        $this->is_book = $is_book;
+        $this->is_ebook = $is_ebook;
 
         return $this;
     }
