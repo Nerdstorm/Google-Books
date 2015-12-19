@@ -1,6 +1,6 @@
 <?php
 
-namespace tests\Nerdstorm\GoogleBooks\Service;
+namespace tests\Nerdstorm\GoogleBooks\Annotations\Mapper;
 
 use Nerdstorm\GoogleBooks\Annotations\Mapper\AnnotationMapper;
 use Nerdstorm\GoogleBooks\Entity\BookPrice;
@@ -113,11 +113,8 @@ JSON;
     public function testVolumeEntityMapping()
     {
         $json_obj = json_decode($this->book_volume, true);
-        $object   = $this->mapper->resolveEntity($json_obj['kind']);
+        $volume   = $this->mapper->resolveEntity($json_obj);
         unset($json_obj['kind']);
-
-        // Get the mapped volume object
-        $volume = $this->mapper->map($object, $json_obj);
 
         foreach ($json_obj as $key => $value) {
             $actual = call_user_func([$volume, 'get' . ucfirst($key)]);
@@ -133,10 +130,7 @@ JSON;
     public function testVolumeInfoEntityMapping()
     {
         $json_obj = json_decode($this->book_volume, true);
-        $object   = $this->mapper->resolveEntity($json_obj['kind']);
-
-        // Get the mapped volume object
-        $volume = $this->mapper->map($object, $json_obj);
+        $volume   = $this->mapper->resolveEntity($json_obj);
 
         foreach ($json_obj['volumeInfo'] as $key => $value) {
             if (!is_callable([$volume->getVolumeInfo(), 'get' . ucfirst($key)])) {
@@ -175,10 +169,7 @@ JSON;
     public function testSaleInfoEntityMapping()
     {
         $json_obj = json_decode($this->book_volume, true);
-        $object   = $this->mapper->resolveEntity($json_obj['kind']);
-
-        // Get the mapped volume object
-        $volume = $this->mapper->map($object, $json_obj);
+        $volume   = $this->mapper->resolveEntity($json_obj);
 
         foreach ($json_obj['saleInfo'] as $key => $value) {
             if (!is_callable([$volume->getSaleInfo(), 'get' . ucfirst($key)])) {
@@ -203,11 +194,8 @@ JSON;
         $json_obj = json_decode($this->book_volume, true);
 
         /** @var Volumes $object */
-        $object      = $this->mapper->resolveEntity($json_obj['kind']);
+        $volume      = $this->mapper->resolveEntity($json_obj);
         $access_info = $json_obj['accessInfo'];
-
-        // Get the mapped volume object
-        $volume = $this->mapper->map($object, $json_obj);
 
         foreach ($access_info as $key => $value) {
             if (!is_callable([$volume->getAccessInfo(), 'get' . ucfirst($key)])) {
@@ -224,11 +212,8 @@ JSON;
         $json_obj = json_decode($this->book_volumes, true);
 
         /** @var Volumes $object */
-        $object = $this->mapper->resolveEntity($json_obj['kind']);
+        $volumes = $this->mapper->resolveEntity($json_obj);
         unset($json_obj['kind']);
-
-        // Get the mapped volume object
-        $volumes = $this->mapper->map($object, $json_obj);
 
         foreach ($json_obj as $key => $value) {
             $actual = call_user_func([$volumes, 'get' . ucfirst($key)]);

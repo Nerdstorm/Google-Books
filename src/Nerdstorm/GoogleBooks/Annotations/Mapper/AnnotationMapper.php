@@ -89,7 +89,7 @@ class AnnotationMapper
      *
      * @return Entity\EntityInterface
      */
-    public function map(Entity\EntityInterface $object, $data_tree)
+    protected function map(Entity\EntityInterface $object, $data_tree)
     {
         $reflection = new \ReflectionObject($object);
 
@@ -189,22 +189,22 @@ class AnnotationMapper
     }
 
     /**
-     * @param string $kind
+     * @param array $json_data
      *
-     * @return false|mixed
+     * @return false|Entity\EntityInterface
      */
-    public function resolveEntity($kind)
+    public function resolveEntity(array $json_data)
     {
-        if (!$kind) {
+        if (empty($json_data['kind'])) {
             return false;
         }
 
+        $kind = $json_data['kind'];
         if (!isset($this->entity_mappings[$kind])) {
-            throw new \RuntimeException('JSON object kind ' . $kind . ' not defined within entity annotations');
+            throw new \RuntimeException('JSON object kind "' . $kind . '" not defined within entity annotations');
         }
 
         $class_name = $this->entity_mappings[$kind];
-
-        return new $class_name();
+        return $this->map(new $class_name(), $json_data);
     }
 }
