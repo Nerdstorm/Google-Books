@@ -235,7 +235,7 @@ JSON;
 
                         foreach ($json_volume as $key => $value) {
                             if (is_array($value)) {
-                                continue 3;
+                                continue 2;
                             }
 
                             $volume_property_value = call_user_func([$volume, 'get' . ucfirst($key)]);

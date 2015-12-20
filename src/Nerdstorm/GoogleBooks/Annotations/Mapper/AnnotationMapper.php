@@ -126,63 +126,53 @@ class AnnotationMapper
 
                     // Recall the function for the child object
                     $this->map($child_object, $sub_tree);
-                    continue 2;
                     break;
 
                 case JsonProperty::TYPE_OBJECTARRAY:
                     $object_array = [];
                     $class_name   = $annotation->getClassName();
                     $child_object = new $class_name();
-                    $sub_tree = $this->accessor->getValue($data_tree, "[$tree_property_name]");
+                    $sub_trees = $this->accessor->getValue($data_tree, "[$tree_property_name]");
 
-                    // Recall the function for the child object
-                    foreach ($sub_tree as $k => $child_sub_tree) {
-                        $object_array[] = $this->map($child_object, $child_sub_tree);
-                        unset($sub_tree[$k]);
+                    // Recall the map function to instantiate child objects
+                    foreach ($sub_trees as $k => $sub_tree) {
+                        $object_array[$k] = clone $this->map($child_object, $sub_tree);
                     }
 
                     $this->accessor->setValue($object, $class_property_name, $object_array);
-                    continue 2;
                     break;
 
                 case JsonProperty::TYPE_ENUM:
                     $class_name = $annotation->getClassName();
                     $value      = $class_name::memberByValue($data_tree[$tree_property_name]);
                     $this->accessor->setValue($object, $class_property_name, $value);
-                    continue 2;
                     break;
 
                 case JsonProperty::TYPE_ARRAY:
                     $sub_tree = $this->accessor->getValue($data_tree, "[$tree_property_name]");
                     $this->accessor->setValue($object, $class_property_name, $sub_tree);
-                    continue 2;
                     break;
 
                 case JsonProperty::TYPE_DATETIME:
                     $datetime_string = $this->accessor->getValue($data_tree, "[$tree_property_name]");
                     $datetime        = new \DateTime($datetime_string);
                     $this->accessor->setValue($object, $class_property_name, $datetime);
-                    continue 2;
                     break;
 
                 case JsonProperty::TYPE_STRING:
                     $this->accessor->setValue($object, $class_property_name, (string) $data_tree[$tree_property_name]);
-                    continue 2;
                     break;
 
                 case JsonProperty::TYPE_BOOL:
                     $this->accessor->setValue($object, $class_property_name, (bool) $data_tree[$tree_property_name]);
-                    continue 2;
                     break;
 
                 case JsonProperty::TYPE_INT:
                     $this->accessor->setValue($object, $class_property_name, (int) $data_tree[$tree_property_name]);
-                    continue 2;
                     break;
 
                 case JsonProperty::TYPE_FLOAT:
                     $this->accessor->setValue($object, $class_property_name, (float) $data_tree[$tree_property_name]);
-                    continue 2;
                     break;
             }
         }
