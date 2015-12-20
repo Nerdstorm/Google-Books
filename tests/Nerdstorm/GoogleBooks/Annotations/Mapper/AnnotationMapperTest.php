@@ -98,12 +98,16 @@ class AnnotationMapperTest extends \PHPUnit_Framework_TestCase
         /** @var AnnotationMapper mapper */
         $this->mapper = new AnnotationMapper();
 
+        // Change one property for the second book volume
+        $book_volume_2 = str_replace('2kjxBQAAQBAJ', 'm22sBwAAQBAJ', $this->book_volume);
+
         $this->book_volumes = <<<JSON
     {
        "kind": "books#volumes",
        "totalItems": 112,
        "items": [
-           {$this->book_volume}
+           {$this->book_volume},
+           {$book_volume_2}
        ]
     }
 JSON;
@@ -119,7 +123,7 @@ JSON;
         foreach ($json_obj as $key => $value) {
             $actual = call_user_func([$volume, 'get' . ucfirst($key)]);
 
-            if (is_array($json_obj[$key])) {
+            if (is_array($value)) {
                 continue;
             }
 
@@ -215,10 +219,31 @@ JSON;
         $volumes = $this->mapper->resolveEntity($json_obj);
         unset($json_obj['kind']);
 
-        foreach ($json_obj as $key => $value) {
+        // Retrieve Volume objects from Volumes returned
+        $items = $volumes->getItems();
+
+        foreach ($json_obj as $key => $json_value) {
             $actual = call_user_func([$volumes, 'get' . ucfirst($key)]);
 
             if (is_array($json_obj[$key])) {
+                if ('items' == $key) {
+
+                    // Validate individual volume objects
+                    foreach ($json_value as $k => $json_volume) {
+                        $volume = $items[$k];
+                        unset($json_volume['kind']);
+
+                        foreach ($json_volume as $key => $value) {
+                            if (is_array($value)) {
+                                continue 3;
+                            }
+
+                            $volume_property_value = call_user_func([$volume, 'get' . ucfirst($key)]);
+                            $this->assertEquals($value, $volume_property_value);
+                        }
+                    }
+                }
+
                 continue;
             }
 

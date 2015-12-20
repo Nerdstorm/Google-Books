@@ -5,6 +5,7 @@ namespace Nerdstorm\GoogleBooks\Service;
 use GuzzleHttp\Psr7\Response;
 use Nerdstorm\GoogleBooks\Annotations\Mapper\AnnotationMapper;
 use Nerdstorm\GoogleBooks\Api\VolumesSearch;
+use Nerdstorm\GoogleBooks\Entity\Volumes;
 use Nerdstorm\GoogleBooks\Query\QueryInterface;
 use Nerdstorm\GoogleBooks\Query\VolumeSearchQuery;
 
@@ -41,29 +42,19 @@ class VolumeLookupManager
      *
      * @param string $title
      *
-     * @return array
+     * @return Volumes
      */
     public function lookupByTitle($title)
     {
-        $results = [];
-
         /** @var QueryInterface $query */
         $query = new VolumeSearchQuery($title);
 
         /** @var Response $response */
-        $response = $this->volume_search->volumesList($query);
+        $response    = $this->volume_search->volumesList($query);
+        $json_object = json_decode((string) $response->getBody(), true);
+        $volumes     = $this->annotation_mapper->resolveEntity($json_object);
 
-        $json        = (string) $response->getBody();
-        $json_object = json_decode($json, true);
-
-
-        $volumes = $this->annotation_mapper->resolveEntity($json_object['kind']);
-//        unset($json_obj['kind']);
-
-
-        $this->annotation_mapper->map($volumes, $json_object);
-
-        return $results;
+        return $volumes;
     }
 
     public function lookupByAuthor($author)

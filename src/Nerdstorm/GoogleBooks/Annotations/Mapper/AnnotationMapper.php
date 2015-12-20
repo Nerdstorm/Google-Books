@@ -6,6 +6,7 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Nerdstorm\GoogleBooks\Annotations\Definition\JsonProperty;
 use Nerdstorm\GoogleBooks\Entity as Entity;
+use Nerdstorm\GoogleBooks\Exception\InvalidJsonException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
@@ -135,8 +136,9 @@ class AnnotationMapper
                     $sub_tree = $this->accessor->getValue($data_tree, "[$tree_property_name]");
 
                     // Recall the function for the child object
-                    foreach ($sub_tree as $child_sub_tree) {
+                    foreach ($sub_tree as $k => $child_sub_tree) {
                         $object_array[] = $this->map($child_object, $child_sub_tree);
+                        unset($sub_tree[$k]);
                     }
 
                     $this->accessor->setValue($object, $class_property_name, $object_array);
@@ -191,12 +193,13 @@ class AnnotationMapper
     /**
      * @param array $json_data
      *
-     * @return false|Entity\EntityInterface
+     * @return Entity\EntityInterface
+     * @throws InvalidJsonException
      */
     public function resolveEntity(array $json_data)
     {
         if (empty($json_data['kind'])) {
-            return false;
+            throw new InvalidJsonException();
         }
 
         $kind = $json_data['kind'];
