@@ -46,8 +46,9 @@ class VolumeLookupManager
      */
     public function lookupByTitle($title)
     {
-        /** @var QueryInterface $query */
-        $query = new VolumeSearchQuery($title);
+        /** @var VolumeSearchQuery $query */
+        $query = new VolumeSearchQuery();
+        $query->setTitle($title);
 
         /** @var Response $response */
         $response    = $this->volume_search->volumesList($query);
@@ -59,9 +60,16 @@ class VolumeLookupManager
 
     public function lookupByAuthor($author)
     {
-        $results = [];
+        /** @var VolumeSearchQuery $query */
+        $query = new VolumeSearchQuery();
+        $query->setAuthorName($author);
 
-        return $results;
+        /** @var Response $response */
+        $response    = $this->volume_search->volumesList($query);
+        $json_object = json_decode((string) $response->getBody(), true);
+        $volumes     = $this->annotation_mapper->resolveEntity($json_object);
+
+        return $volumes;
     }
 
     public function lookupByPublisher($publisher)

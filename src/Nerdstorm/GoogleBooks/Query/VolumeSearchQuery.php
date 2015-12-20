@@ -45,7 +45,7 @@ class VolumeSearchQuery implements QueryInterface
     /**
      * @param string $query build an object with a basic search query
      */
-    public function __construct($query)
+    public function __construct($query = '')
     {
         $this->setQuery($query);
     }
@@ -136,17 +136,21 @@ class VolumeSearchQuery implements QueryInterface
 
     public function __toString()
     {
-        $query = '';
-
-        if ($this->query) {
-            $query .= $this->query;
-        }
+        $query = $this->query;
 
         if ($this->title) {
-            $query .= ' intitle:';
+            $query .= '+intitle:' . $this->title;
         }
 
-        return urlencode($query);;
+        if ($this->author_name) {
+            $query .= '+inauthor:' . $this->author_name;
+        }
+
+        if (empty($this->query)) {
+            $query = substr($query, 1);
+        }
+
+        return $query;
     }
 
 }

@@ -37,11 +37,26 @@ class VolumeLookupManagerTest extends \PHPUnit_Framework_TestCase
 
     public function testLookupByTitle()
     {
-        $title = 'systems analysis and design';
+        $title = 'systems analysis and design for a changing world';
+        $query = new VolumeSearchQuery();
+        $query->setTitle($title);
 
         // Retrieve volumes using the lookup manager
         $volumes      = $this->volume_lookup_manager->lookupByTitle($title)->getItems();
-        $json_volumes = $this->callApi(new VolumeSearchQuery($title));
+        $json_volumes = $this->callApi($query);
+
+        foreach ($volumes as $k => $volume) {
+            $this->annotation_mapper_test->testVolumeEntityMapping($json_volumes['items'][$k], $volume);
+        }
+    }
+
+    public function testLookupByAuthor()
+    {
+        $author = 'John Satzinger';
+
+        // Retrieve volumes using the lookup manager
+        $volumes      = $this->volume_lookup_manager->lookupByAuthor($author)->getItems();
+        $json_volumes = $this->callApi(new VolumeSearchQuery($author));
 
         foreach ($volumes as $k => $volume) {
             $this->annotation_mapper_test->testVolumeEntityMapping($json_volumes['items'][$k], $volume);
