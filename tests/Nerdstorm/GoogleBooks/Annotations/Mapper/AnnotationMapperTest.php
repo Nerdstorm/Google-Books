@@ -4,6 +4,7 @@ namespace tests\Nerdstorm\GoogleBooks\Annotations\Mapper;
 
 use Nerdstorm\GoogleBooks\Annotations\Mapper\AnnotationMapper;
 use Nerdstorm\GoogleBooks\Entity\BookPrice;
+use Nerdstorm\GoogleBooks\Entity\Volume;
 use Nerdstorm\GoogleBooks\Entity\Volumes;
 
 class AnnotationMapperTest extends \PHPUnit_Framework_TestCase
@@ -114,10 +115,16 @@ JSON;
 
     }
 
-    public function testVolumeEntityMapping()
+    public function testVolumeEntityMapping(array $json_obj = null, Volume $volume = null)
     {
-        $json_obj = json_decode($this->book_volume, true);
-        $volume   = $this->mapper->resolveEntity($json_obj);
+        if (null == $json_obj) {
+            $json_obj = json_decode($this->book_volume, true);
+        }
+
+        if (null == $volume) {
+            $volume = $this->mapper->resolveEntity($json_obj);
+        }
+
         unset($json_obj['kind']);
 
         foreach ($json_obj as $key => $value) {
