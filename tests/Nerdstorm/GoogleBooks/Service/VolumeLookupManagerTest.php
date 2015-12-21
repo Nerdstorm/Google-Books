@@ -35,34 +35,6 @@ class VolumeLookupManagerTest extends \PHPUnit_Framework_TestCase
         $this->annotation_mapper_test = new AnnotationMapperTest();
     }
 
-    public function testLookupByTitle()
-    {
-        $title = 'systems analysis and design for a changing world';
-        $query = new VolumeSearchQuery();
-        $query->setTitle($title);
-
-        // Retrieve volumes using the lookup manager
-        $volumes      = $this->volume_lookup_manager->lookupByTitle($title)->getItems();
-        $json_volumes = $this->callApi($query);
-
-        foreach ($volumes as $k => $volume) {
-            $this->annotation_mapper_test->testVolumeEntityMapping($json_volumes['items'][$k], $volume);
-        }
-    }
-
-    public function testLookupByAuthor()
-    {
-        $author = 'John Satzinger';
-
-        // Retrieve volumes using the lookup manager
-        $volumes      = $this->volume_lookup_manager->lookupByAuthor($author)->getItems();
-        $json_volumes = $this->callApi(new VolumeSearchQuery($author));
-
-        foreach ($volumes as $k => $volume) {
-            $this->annotation_mapper_test->testVolumeEntityMapping($json_volumes['items'][$k], $volume);
-        }
-    }
-
     /**
      * Helper function to call the Google Books API directly and return results.
      * This is used for tests written for the VolumeLookupManager.
@@ -77,6 +49,38 @@ class VolumeLookupManagerTest extends \PHPUnit_Framework_TestCase
         $json = (string) $response->getBody();
 
         return json_decode($json, true);
+    }
+
+    public function testLookupByTitle()
+    {
+        $title = 'systems analysis and design for a changing world';
+
+        // Retrieve volumes using the lookup manager
+        $volumes = $this->volume_lookup_manager->lookupByTitle($title)->getItems();
+
+        $query = new VolumeSearchQuery();
+        $query->setTitle($title);
+        $json_volumes = $this->callApi($query);
+
+        foreach ($volumes as $k => $volume) {
+            $this->annotation_mapper_test->testVolumeEntityMapping($json_volumes['items'][$k], $volume);
+        }
+    }
+
+    public function testLookupByAuthor()
+    {
+        $author = 'John Satzinger';
+
+        // Retrieve volumes using the lookup manager
+        $volumes = $this->volume_lookup_manager->lookupByAuthor($author)->getItems();
+
+        $query = new VolumeSearchQuery();
+        $query->setAuthorName($author);
+        $json_volumes = $this->callApi($query);
+
+        foreach ($volumes as $k => $volume) {
+            $this->annotation_mapper_test->testVolumeEntityMapping($json_volumes['items'][$k], $volume);
+        }
     }
 
 }
