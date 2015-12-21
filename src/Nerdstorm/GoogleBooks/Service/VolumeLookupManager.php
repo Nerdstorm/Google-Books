@@ -40,8 +40,9 @@ class VolumeLookupManager
      * Find volumes in the Google Books database by their title.
      * Title is a string which will be used for partially match volumes.
      *
-     * @param string $title
+     * TODO: Make this accept start_index and limit, if both not set, return all results recursively requesting data
      *
+     * @param string $title
      * @return Volumes
      */
     public function lookupByTitle($title)
@@ -58,6 +59,15 @@ class VolumeLookupManager
         return $volumes;
     }
 
+    /**
+     * Find volumes in the Google Books database by their title.
+     * Title is a string which will be used for partially match volumes.
+     *
+     * TODO: Make this accept start_index and limit, if both not set, return all results recursively requesting data
+     *
+     * @param string $title
+     * @return Volumes
+     */
     public function lookupByAuthor($author)
     {
         /** @var VolumeSearchQuery $query */
