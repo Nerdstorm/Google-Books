@@ -15,6 +15,7 @@ use Nerdstorm\GoogleBooks\Query\QueryInterface;
 
 class VolumesSearch extends AbstractSearchBase
 {
+    const MAX_RESULTS = 10;
 
     /**
      * Performs a book search.
@@ -31,7 +32,7 @@ class VolumesSearch extends AbstractSearchBase
      * @param string              $lang_restrict  Restrict results to books with this language code. ISO-639-1 code.
      * @param int                 $start_index    Index of the first result to return (starts at 0)
      * @param int                 $max_results    Maximum number of results to return. Acceptable values are 0 to 40,
-     *                                            inclusive. Default is 10.
+     *                                            inclusive. Default is 10 (self::MAX_RESULTS).
      * @param OrderByEnum         $order_by       Sort search results.
      *                                            Acceptable values are:
      *                                            "newest" - Most recently published.
@@ -49,7 +50,7 @@ class VolumesSearch extends AbstractSearchBase
      * @return Volumes
      */
     public function volumesList(QueryInterface $q, $download = false, VolumeFilterEnum $filter = null,
-        $lang_restrict = null, $start_index = 0, $max_results = 10, OrderByEnum $order_by = null,
+        $lang_restrict = null, $start_index = 0, $max_results = self::MAX_RESULTS, OrderByEnum $order_by = null,
         PublicationTypeEnum $print_type = null, ProjectionEnum $projection = null)
     {
         $api_method = 'volumes/';
