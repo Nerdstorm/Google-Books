@@ -94,17 +94,6 @@ class VolumeLookupManager
 
         /** @var Volumes $results */
         $_volumes = $this->annotation_mapper->resolveEntity($json_object);
-
-        /**
-         * Google's trick of first best-guessing the total results for a query.
-         * https://productforums.google.com/forum/#!topic/books-api/Y_uEJhohJCc
-         *
-         * Therefore, we assume Google only got only whatever number of results based on its very first response.
-         */
-        if (!$_volumes->getTotalItems()) {
-            return $volumes;
-        }
-
         $volumes->setItems($volumes->getItems() + $_volumes->getItems());
         $start_index += (int) VolumesSearch::MAX_RESULTS;
 

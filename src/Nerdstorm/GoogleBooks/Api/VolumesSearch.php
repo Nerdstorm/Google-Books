@@ -122,11 +122,12 @@ class VolumesSearch extends AbstractSearchBase
                         case 'usageLimits':
                             throw new UsageExceededException($error['message']);
                             break;
-                        default:
-                            throw $e;
                     }
                 }
             }
+
+            // Throw the original exception
+            throw $e;
         }
 
         return $json;
