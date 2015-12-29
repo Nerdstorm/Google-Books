@@ -58,7 +58,7 @@ class VolumeLookupManager
 
     /**
      * @param VolumeSearchQuery        $query
-     * @param int                      $start
+     * @param int                      $start_index
      * @param int                      $count
      * @param OrderByEnum|null         $order_by
      * @param bool                     $downloadable
@@ -71,21 +71,22 @@ class VolumeLookupManager
      * @return array|\Nerdstorm\GoogleBooks\Entity\EntityInterface
      * @throws \Nerdstorm\GoogleBooks\Exception\InvalidJsonException
      */
-    public function lookup(VolumeSearchQuery $query, $start = 0, $count = VolumesSearch::MAX_RESULTS,
+    public function lookup(VolumeSearchQuery $query, $start_index = 0, $count = VolumesSearch::MAX_RESULTS,
         OrderByEnum $order_by = null, $downloadable = null, VolumeFilterEnum $filter = null, $language = null,
         PublicationTypeEnum $print_type = null, ProjectionEnum $projection = null, Volumes $volumes = null)
     {
         if (null === $volumes) {
             $volumes = new Volumes();
-        } elseif (count($volumes->getItems()) >= $volumes->getTotalItems()) {
+        } elseif (count($volumes->getItems()) >= $count) {
+            $volumes->setItems(array_chunk($volumes->getItems(), $count));
+            $volumes->setTotalItems(count($volumes->getItems()));
+
             return $volumes;
         }
 
-        var_dump(count($volumes->getItems()), $volumes->getTotalItems());
-
         /** @var Response $response */
         $response = $this->volume_search->volumesList(
-            $query, $downloadable, $filter, $language, $start, VolumesSearch::MAX_RESULTS, $order_by, $print_type,
+            $query, $downloadable, $filter, $language, $start_index, VolumesSearch::MAX_RESULTS, $order_by, $print_type,
             $projection
         );
 
@@ -100,16 +101,15 @@ class VolumeLookupManager
          *
          * Therefore, we assume Google only got only whatever number of results based on its very first response.
          */
-        if (!$volumes->getTotalItems()) {
-            $volumes = new Volumes();
-            $volumes->setTotalItems($_volumes->getTotalItems());
+        if (!$_volumes->getTotalItems()) {
+            return $volumes;
         }
 
-        $volumes->setItems(array_merge($volumes->getItems(), $_volumes->getItems()));
+        $volumes->setItems($volumes->getItems() + $_volumes->getItems());
+        $start_index += (int) VolumesSearch::MAX_RESULTS;
 
-        $start += (int) VolumesSearch::MAX_RESULTS;
-        $this->lookup(
-            $query, (int) $start, (int) $count, $order_by, $downloadable, $filter, $language,
+        return $this->lookup(
+            $query, (int) $start_index, (int) $count, $order_by, $downloadable, $filter, $language,
             $print_type, $projection, $volumes
         );
     }
