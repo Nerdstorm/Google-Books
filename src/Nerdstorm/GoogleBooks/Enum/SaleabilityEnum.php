@@ -12,8 +12,9 @@ use Eloquent\Enumeration\AbstractEnumeration;
  */
 final class SaleabilityEnum extends AbstractEnumeration
 {
-    const FOR_SALE     = 'FOR_SALE';
-    const FREE         = 'FREE';
-    const NOT_FOR_SALE = 'NOT_FOR_SALE';
-    const FOR_PREORDER = 'FOR_PREORDER';
+    const FOR_SALE            = 'FOR_SALE';
+    const FREE                = 'FREE';
+    const NOT_FOR_SALE        = 'NOT_FOR_SALE';
+    const FOR_PREORDER        = 'FOR_PREORDER';
+    const FOR_SALE_AND_RENTAL = 'FOR_SALE_AND_RENTAL';
 }

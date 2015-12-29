@@ -154,7 +154,12 @@ class AnnotationMapper
                     break;
 
                 case JsonProperty::TYPE_DATETIME:
-                    $datetime_string = $this->accessor->getValue($data_tree, "[$tree_property_name]");
+                    $datetime_string = preg_replace(
+                        '/[^0-9\-]/',
+                        '',
+                        $this->accessor->getValue($data_tree, "[$tree_property_name]")
+                    );
+
                     $datetime        = new \DateTime($datetime_string);
                     $this->accessor->setValue($object, $class_property_name, $datetime);
                     break;

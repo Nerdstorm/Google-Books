@@ -59,47 +59,59 @@ class VolumeLookupManager
     /**
      * @param VolumeSearchQuery        $query
      * @param int                      $start
-     * @param int                      $limit
+     * @param int                      $count
      * @param OrderByEnum|null         $order_by
-     * @param null                     $downloadable
+     * @param bool                     $downloadable
      * @param VolumeFilterEnum|null    $filter
-     * @param null                     $language
+     * @param string                   $language
      * @param PublicationTypeEnum|null $print_type
      * @param ProjectionEnum|null      $projection
-     * @param array                    $volumes
+     * @param Volumes                  $volumes
      *
      * @return array|\Nerdstorm\GoogleBooks\Entity\EntityInterface
      * @throws \Nerdstorm\GoogleBooks\Exception\InvalidJsonException
      */
-    protected function lookup(VolumeSearchQuery $query, $start = 0, $limit = 10, OrderByEnum $order_by = null,
-        $downloadable = null, VolumeFilterEnum $filter = null, $language = null,
-        PublicationTypeEnum $print_type = null, ProjectionEnum $projection = null, array $volumes)
+    public function lookup(VolumeSearchQuery $query, $start = 0, $count = VolumesSearch::MAX_RESULTS,
+        OrderByEnum $order_by = null, $downloadable = null, VolumeFilterEnum $filter = null, $language = null,
+        PublicationTypeEnum $print_type = null, ProjectionEnum $projection = null, Volumes $volumes = null)
     {
-        $_limit = 0;
-        $_start = $start;
-
-        if ($limit <= VolumesSearch::MAX_RESULTS) {
-            $_limit = $limit;
-        } elseif (floor($limit / VolumesSearch::MAX_RESULTS) > 0) {
-            $_limit = $limit - VolumesSearch::MAX_RESULTS;
+        if (null === $volumes) {
+            $volumes = new Volumes();
+        } elseif (count($volumes->getItems()) >= $volumes->getTotalItems()) {
+            return $volumes;
         }
 
-        if ($_limit <= VolumesSearch::MAX_RESULTS) {
-            /** @var Response $response */
-            $response = $this->volume_search->volumesList(
-                $query, $downloadable, $filter, $language, $start, $_limit, $order_by, $print_type, $projection
-            );
+        var_dump(count($volumes->getItems()), $volumes->getTotalItems());
 
-            $json_object = json_decode((string) $response->getBody(), true);
-            $volumes += $this->annotation_mapper->resolveEntity($json_object);
-        } else {
-            $volumes += $this->lookup(
-                $query, $start, $_limit, $order_by, $downloadable, $filter, $language, $start, $_limit, $order_by,
-                $print_type, $projection, $volumes
-            );
+        /** @var Response $response */
+        $response = $this->volume_search->volumesList(
+            $query, $downloadable, $filter, $language, $start, VolumesSearch::MAX_RESULTS, $order_by, $print_type,
+            $projection
+        );
+
+        $json_object = json_decode((string) $response->getBody(), true);
+
+        /** @var Volumes $results */
+        $_volumes = $this->annotation_mapper->resolveEntity($json_object);
+
+        /**
+         * Google's trick of first best-guessing the total results for a query.
+         * https://productforums.google.com/forum/#!topic/books-api/Y_uEJhohJCc
+         *
+         * Therefore, we assume Google only got only whatever number of results based on its very first response.
+         */
+        if (!$volumes->getTotalItems()) {
+            $volumes = new Volumes();
+            $volumes->setTotalItems($_volumes->getTotalItems());
         }
 
-        return $volumes;
+        $volumes->setItems(array_merge($volumes->getItems(), $_volumes->getItems()));
+
+        $start += (int) VolumesSearch::MAX_RESULTS;
+        $this->lookup(
+            $query, (int) $start, (int) $count, $order_by, $downloadable, $filter, $language,
+            $print_type, $projection, $volumes
+        );
     }
 
     /**

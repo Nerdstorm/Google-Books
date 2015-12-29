@@ -2,6 +2,8 @@
 
 namespace Nerdstorm\GoogleBooks\Api;
 
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Psr7\Response;
 use Nerdstorm\GoogleBooks\Entity\Volume;
 use Nerdstorm\GoogleBooks\Entity\Volumes;
 use Nerdstorm\GoogleBooks\Enum\OrderByEnum;
@@ -11,11 +13,12 @@ use Nerdstorm\GoogleBooks\Enum\VolumeFilterEnum;
 use Nerdstorm\GoogleBooks\Exception\ArgumentOutOfBoundsException;
 use Nerdstorm\GoogleBooks\Exception\InvalidVolumeId;
 use Nerdstorm\GoogleBooks\Exception\InvalidVolumeIdException;
+use Nerdstorm\GoogleBooks\Exception\UsageExceededException;
 use Nerdstorm\GoogleBooks\Query\QueryInterface;
 
 class VolumesSearch extends AbstractSearchBase
 {
-    const MAX_RESULTS = 10;
+    const MAX_RESULTS = 40;
 
     /**
      * Performs a book search.
@@ -32,7 +35,7 @@ class VolumesSearch extends AbstractSearchBase
      * @param string              $lang_restrict  Restrict results to books with this language code. ISO-639-1 code.
      * @param int                 $start_index    Index of the first result to return (starts at 0)
      * @param int                 $max_results    Maximum number of results to return. Acceptable values are 0 to 40,
-     *                                            inclusive. Default is 10 (self::MAX_RESULTS).
+     *                                            inclusive. Default is 40 (self::MAX_RESULTS).
      * @param OrderByEnum         $order_by       Sort search results.
      *                                            Acceptable values are:
      *                                            "newest" - Most recently published.
@@ -107,7 +110,26 @@ class VolumesSearch extends AbstractSearchBase
             $query['startIndex'] = (int) $start_index;
         }
 
-        return $this->send('get', $api_method, ['query' => $query]);
+        try {
+            $json = $this->send('get', $api_method, ['query' => $query]);
+        } catch (ClientException $e) {
+            $json = json_decode($e->getResponse()->getBody(), true);
+
+            // Error handling
+            if ($e->getResponse()->getStatusCode() == 403) {
+                foreach ($json['error']['errors'] as $error) {
+                    switch($error['domain']) {
+                        case 'usageLimits':
+                            throw new UsageExceededException($error['message']);
+                            break;
+                        default:
+                            throw $e;
+                    }
+                }
+            }
+        }
+
+        return $json;
     }
 
     /**

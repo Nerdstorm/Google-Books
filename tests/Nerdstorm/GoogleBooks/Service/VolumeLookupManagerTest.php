@@ -51,6 +51,15 @@ class VolumeLookupManagerTest extends \PHPUnit_Framework_TestCase
         return json_decode($json, true);
     }
 
+    public function testLookupFn()
+    {
+        $query = new VolumeSearchQuery();
+        $query->setTitle('Flowers');
+
+        $volumes = $this->volume_lookup_manager->lookup($query, 0, 104);
+        print_r($volumes);
+    }
+
     public function testLookupByTitle()
     {
         $title = 'systems analysis and design for a changing world';

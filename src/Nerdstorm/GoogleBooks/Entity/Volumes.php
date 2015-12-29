@@ -27,7 +27,7 @@ class Volumes implements EntityInterface
      * @var Volume[]
      * @Annotations\JsonProperty("items", type="object[]", className="Nerdstorm\GoogleBooks\Entity\Volume")
      */
-    protected $items;
+    protected $items = [];
 
     /**
      * @return int
@@ -68,5 +68,4 @@ class Volumes implements EntityInterface
 
         return $this;
     }
-
 }
