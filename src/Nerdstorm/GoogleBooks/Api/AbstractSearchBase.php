@@ -3,6 +3,7 @@
 namespace Nerdstorm\GoogleBooks\Api;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 
 abstract class AbstractSearchBase
@@ -39,7 +40,7 @@ abstract class AbstractSearchBase
         $config['base_uri'] = self::ENDPOINT . self::VERSION . '/';
 
         // Default query parameters for requests
-        $this->client_config['defaults']['query'] = [
+        $this->client_config['request.options']['query'] = [
             'key' => $api_key
         ];
 
@@ -72,8 +73,8 @@ abstract class AbstractSearchBase
             throw new \InvalidArgumentException('HTTP method is not valid for Google Books search endpoints.');
         }
 
+        /** @var Response $response */
         $response = call_user_func([$this->client, $method], $api_func, $query);
-
         return $response;
     }
 

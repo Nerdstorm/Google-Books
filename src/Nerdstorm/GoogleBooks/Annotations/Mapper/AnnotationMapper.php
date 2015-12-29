@@ -160,7 +160,13 @@ class AnnotationMapper
                         $this->accessor->getValue($data_tree, "[$tree_property_name]")
                     );
 
-                    $datetime        = new \DateTime($datetime_string);
+                    // Try if the date time is parse-able if not set to null
+                    try {
+                        $datetime = new \DateTime($datetime_string);
+                    } catch (\Exception $e) {
+                        $datetime = null;
+                    }
+
                     $this->accessor->setValue($object, $class_property_name, $datetime);
                     break;
 
