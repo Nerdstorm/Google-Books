@@ -68,4 +68,16 @@ class Volumes implements EntityInterface
 
         return $this;
     }
+
+    /**
+     * @param Volume[] $items
+     *
+     * @return Volumes
+     */
+    public function addItems(array $items)
+    {
+        $this->items = array_merge($this->items, $items);
+
+        return $this;
+    }
 }

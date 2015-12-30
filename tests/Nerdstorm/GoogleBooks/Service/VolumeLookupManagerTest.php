@@ -57,7 +57,8 @@ class VolumeLookupManagerTest extends \PHPUnit_Framework_TestCase
         $query->setTitle('Flowers');
 
         $volumes = $this->volume_lookup_manager->lookup($query, 0, 104);
-        print_r($volumes);
+
+        var_dump("From test results", $volumes->getTotalItems(), count($volumes->getItems()));
     }
 
     public function testLookupByTitle()
