@@ -4,6 +4,7 @@ namespace tests\Nerdstorm\GoogleBooks\Service;
 
 use GuzzleHttp\Psr7\Response;
 use Nerdstorm\GoogleBooks\Api\VolumesSearch;
+use Nerdstorm\GoogleBooks\Entity\Volumes;
 use Nerdstorm\GoogleBooks\Query\VolumeSearchQuery;
 use Nerdstorm\GoogleBooks\Service\VolumeLookupManager;
 use tests\Nerdstorm\Config;
@@ -28,10 +29,8 @@ class VolumeLookupManagerTest extends \PHPUnit_Framework_TestCase
             Config::guzzleOpts()
         );
 
-        $config = ['api_key' => Config::API_KEY] + Config::guzzleOpts();
-
         /** @var VolumeLookupManager volume_lookup_manager */
-        $this->volume_lookup_manager  = new VolumeLookupManager($config);
+        $this->volume_lookup_manager  = new VolumeLookupManager($this->volume_search);
         $this->annotation_mapper_test = new AnnotationMapperTest();
     }
 
@@ -56,9 +55,12 @@ class VolumeLookupManagerTest extends \PHPUnit_Framework_TestCase
         $query = new VolumeSearchQuery();
         $query->setTitle('Flowers');
 
-        $volumes = $this->volume_lookup_manager->lookup($query, 0, 104);
+        /** @var Volumes $volumes */
+        $volumes = $this->volume_lookup_manager->lookup($query, 0, 11);
+        $this->assertEquals(11, $volumes->getTotalItems());
+        $this->assertCount(11, $volumes->getItems());
 
-        var_dump("From test results", $volumes->getTotalItems(), count($volumes->getItems()));
+
     }
 
     public function testLookupByTitle()

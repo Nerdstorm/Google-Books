@@ -23,19 +23,11 @@ class VolumeLookupManager
     /**
      * VolumeLookupManager constructor.
      *
-     * @param array $config Configuration required for setting up lookup manager to communicate with Google Books
-     *                      API endpoint.
+     * @param VolumesSearch $volume_search VolumeSearch service required to communicate with Google Books API endpoint.
      */
-    public function __construct(array $config)
+    public function __construct(VolumesSearch $volume_search)
     {
-        if (empty($config['api_key'])) {
-            throw new \RuntimeException('GoogleBooks API key not defined');
-        }
-
-        $api_key = $config['api_key'];
-        unset($config['api_key']);
-
-        $this->volume_search     = new VolumesSearch($api_key, $config);
+        $this->volume_search     = $volume_search;
         $this->annotation_mapper = new AnnotationMapper();
     }
 
