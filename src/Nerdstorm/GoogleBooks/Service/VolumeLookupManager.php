@@ -5,6 +5,7 @@ namespace Nerdstorm\GoogleBooks\Service;
 use GuzzleHttp\Psr7\Response;
 use Nerdstorm\GoogleBooks\Annotations\Mapper\AnnotationMapper;
 use Nerdstorm\GoogleBooks\Api\VolumesSearch;
+use Nerdstorm\GoogleBooks\Entity\Volume;
 use Nerdstorm\GoogleBooks\Entity\Volumes;
 use Nerdstorm\GoogleBooks\Enum\OrderByEnum;
 use Nerdstorm\GoogleBooks\Enum\ProjectionEnum;
@@ -35,17 +36,18 @@ class VolumeLookupManager
      * Find volumes in the Google Books database by their title.
      * Title is a string which will be used for partially match volumes.
      *
-     * @param string $title
-     *
+     * @param     $title
+     * @param int $start
+     * @param int $count Default: VolumesSearch::MAX_RESULTS
      * @return Volumes
      */
-    public function lookupByTitle($title, $start = 0, $limit = 10)
+    public function lookupByTitle($title, $start = 0, $count = VolumesSearch::MAX_RESULTS)
     {
         /** @var VolumeSearchQuery $query */
         $query = new VolumeSearchQuery();
         $query->setTitle($title);
 
-        return $this->lookup($query, $start, $limit);
+        return $this->lookup($query, $start, $count);
     }
 
     /**
@@ -103,61 +105,82 @@ class VolumeLookupManager
     }
 
     /**
-     * Find volumes in the Google Books database by their title.
-     * Title is a string which will be used for partially match volumes.
+     * Find volumes in the Google Books database by the author name.
      *
-     * TODO: Make this accept start_index and limit, if both not set, return all results recursively requesting data
-     *
-     * @param string $title
+     * @param string $author
+     * @param int    $start
+     * @param int    $count Default: VolumesSearch::MAX_RESULTS
      *
      * @return Volumes
      */
-    public function lookupByAuthor($author)
+    public function lookupByAuthor($author, $start = 0, $count = VolumesSearch::MAX_RESULTS)
     {
         /** @var VolumeSearchQuery $query */
         $query = new VolumeSearchQuery();
         $query->setAuthorName($author);
 
-        /** @var Response $response */
-        $response    = $this->volume_search->volumesList($query);
-        $json_object = json_decode((string) $response->getBody(), true);
-        $volumes     = $this->annotation_mapper->resolveEntity($json_object);
-
-        return $volumes;
+        return $this->lookup($query, $start, $count);
     }
 
-    public function lookupByPublisher($publisher)
+    /**
+     * Find volumes in the Google Books database by the publish name.
+     *
+     * @param string $publisher
+     * @param int    $start
+     * @param int    $count Default: VolumesSearch::MAX_RESULTS
+     *
+     * @return Volumes
+     */
+    public function lookupByPublisher($publisher, $start = 0, $count = VolumesSearch::MAX_RESULTS)
     {
-        $results = [];
+        /** @var VolumeSearchQuery $query */
+        $query = new VolumeSearchQuery();
+        $query->setPublisher($publisher);
 
-        return $results;
+        return $this->lookup($query, $start, $count);
     }
 
-    public function lookupByCategory($category)
+    /**
+     * Find volumes filtered by the subject.
+     *
+     * @param string $subject
+     * @param int    $start
+     * @param int    $count
+     *
+     * @return Volumes
+     */
+    public function lookupBySubject($subject, $start = 0, $count = VolumesSearch::MAX_RESULTS)
     {
-        $results = [];
+        /** @var VolumeSearchQuery $query */
+        $query = new VolumeSearchQuery();
+        $query->setSubject($subject);
 
-        return $results;
+        return $this->lookup($query, $start, $count);
     }
 
-    public function lookupByISBN($isbn)
+    /**
+     * Find a volume by an ISBN.
+     *
+     * @param     $isbn
+     * @param int $start
+     * @param int $count
+     *
+     * @return Volume|null
+     */
+    public function findByISBN($isbn)
     {
-        $results = [];
+        /** @var VolumeSearchQuery $query */
+        $query = new VolumeSearchQuery();
+        $query->setIsbn($isbn);
 
-        return $results;
+        $volumes = $this->lookup($query);
+
+        if ($volumes->getTotalItems()) {
+            $volumes = $volumes->getItems();
+            return reset($volumes);
+        }
+
+        return null;
     }
 
-    public function lookupByLCCN($lccn)
-    {
-        $results = [];
-
-        return $results;
-    }
-
-    public function lookupByOCLC($lccn)
-    {
-        $results = [];
-
-        return $results;
-    }
 }
