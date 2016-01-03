@@ -49,6 +49,13 @@ class VolumeLookupManager
     }
 
     /**
+     * Lookup volumes based on the provided parameters. Returns a Volumes object.
+     * Function calls the API recursively to retrieve all volumes based on the query parameters.
+     *
+     * The recursiveness of the function depend on the $count parameter as API only returns a maximum of 40 results
+     * at once, for ex: using a 80 as $count would recursively call the API twice. Therefore the value of the
+     * $count variable contribute to how long this function would run.
+     *
      * @param VolumeSearchQuery        $query
      * @param int                      $start_index
      * @param int                      $count
@@ -60,7 +67,7 @@ class VolumeLookupManager
      * @param ProjectionEnum|null      $projection
      * @param Volumes                  $volumes
      *
-     * @return array|\Nerdstorm\GoogleBooks\Entity\EntityInterface
+     * @return Volumes
      * @throws \Nerdstorm\GoogleBooks\Exception\InvalidJsonException
      */
     public function lookup(VolumeSearchQuery $query, $start_index = 0, $count = VolumesSearch::MAX_RESULTS,
