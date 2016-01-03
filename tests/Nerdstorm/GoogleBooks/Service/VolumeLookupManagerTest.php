@@ -55,12 +55,57 @@ class VolumeLookupManagerTest extends \PHPUnit_Framework_TestCase
         $query = new VolumeSearchQuery();
         $query->setTitle('Flowers');
 
-        /** @var Volumes $volumes */
-        $volumes = $this->volume_lookup_manager->lookup($query, 0, 11);
-        $this->assertEquals(11, $volumes->getTotalItems());
-        $this->assertCount(11, $volumes->getItems());
+        /**
+         * Sub Test 1
+         * -----------
+         * Run a basic search and check how many items in the result.
+         *
+         */
+        $results = $this->volume_lookup_manager->lookup($query, 0, 10);
+        $this->assertEquals(10, $results->getTotalItems());
+        $this->assertCount(10, $results->getItems());
 
+        $volumes = $results->getItems();
+        $volume_5 = $volumes[5];
 
+        /**
+         * Sub Test 2
+         * -----------
+         * Run a basic search similar to above and get results starting from 5th result
+         *
+         */
+        $results = $this->volume_lookup_manager->lookup($query, 5, 10);
+        $this->assertEquals(10, $results->getTotalItems());
+        $this->assertCount(10, $results->getItems());
+
+        /**
+         * Sub Test 3
+         * -----------
+         * Compare the 5th volume of the "Sub Test 1" with the 0th Volume of the "Sub Test 2".
+         * This proves cursor movement within the result set .
+         */
+        $volumes = $results->getItems();
+        $this->assertEquals($volume_5->getId(), $volumes[0]->getId());
+
+        /**
+         * Sub Test 4
+         * -----------
+         * This is similar to above tests but uses a bigger result set.
+         */
+        $results = $this->volume_lookup_manager->lookup($query, 100, 200);
+        $this->assertEquals(200, $results->getTotalItems());
+        $this->assertCount(200, $results->getItems());
+
+        $volumes = $results->getItems();
+        $volume_180th = $volumes[180];
+
+        $results = $this->volume_lookup_manager->lookup($query, 200, 220);
+        $this->assertEquals(220, $results->getTotalItems());
+        $this->assertCount(220, $results->getItems());
+
+        // Check 180th Volume is same as the 80th of the second result set
+        $volumes = $results->getItems();
+        $this->assertEquals($volume_180th->getId(), $volumes[80]->getId());
     }
 
     public function testLookupByTitle()
