@@ -39,8 +39,9 @@ class VolumeSearchTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('application/json; charset=UTF-8', $response->getHeader('Content-Type')[0]);
         $this->assertEquals($data['kind'], 'books#volumes');
-        if ($data['totalItems'] >= 10) {
-            $this->assertCount(10, $data['items']);
+
+        if ($data['totalItems'] >= 40) {
+            $this->assertCount(40, $data['items']);
         } else {
             $this->assertCount($data['totalItems'], $data['items']);
         }
@@ -166,7 +167,6 @@ class VolumeSearchTest extends \PHPUnit_Framework_TestCase
         foreach ($data['items'] as $volume) {
             $this->assertEquals($volume['volumeInfo']['printType'], 'MAGAZINE');
         }
-
     }
 
     public function testVolumeGetById()

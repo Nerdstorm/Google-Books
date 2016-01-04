@@ -79,8 +79,10 @@ class VolumeLookupManager
         if (null === $volumes) {
             $volumes = new Volumes();
         } elseif (count($volumes->getItems()) >= $count) {
-            $volumes->setItems(array_slice($volumes->getItems(), 0, $count));
-            $volumes->setTotalItems($count);
+            $volumes
+                ->setItems(array_slice($volumes->getItems(), 0, $count))
+                ->setTotalItems($count)
+            ;
 
             return $volumes;
         }
@@ -97,6 +99,15 @@ class VolumeLookupManager
         $_volumes = $this->annotation_mapper->resolveEntity($json_object);
         $volumes->addItems($_volumes->getItems());
         $start_index += (int) VolumesSearch::MAX_RESULTS;
+
+        if (count($_volumes->getItems()) < VolumesSearch::MAX_RESULTS) {
+            $volumes
+                ->setItems(array_slice($volumes->getItems(), 0, $count))
+                ->setTotalItems($count)
+            ;
+
+            return $volumes;
+        }
 
         return $this->lookup(
             $query, (int) $start_index, (int) $count, $order_by, $downloadable, $filter, $language,
