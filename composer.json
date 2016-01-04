@@ -11,15 +11,16 @@
     ],
     "autoload": {
         "psr-4": {
-            "": ["src/"]
+            "Nerdstorm\\GoogleBooks\\": "src/Nerdstorm/GoogleBooks/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "": ["tests/"]
+            "tests\\Nerdstorm\\": "tests/Nerdstorm/"
         }
     },
     "require": {
+        "php": "^5.4 || ^7.0",
         "guzzlehttp/guzzle": "~6.0",
         "eloquent/enumeration": "^5.1",
         "doctrine/annotations": "^1.2",

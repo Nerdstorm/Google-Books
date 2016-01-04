@@ -9,7 +9,7 @@ class Config
     public static function guzzleOpts()
     {
         return [
-            'defaults' => [
+            'request.options' => [
                 'proxy' => null,
             ],
         ];

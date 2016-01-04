@@ -67,6 +67,16 @@ class Volume implements EntityInterface
     protected $access_info;
 
     /**
+     * This field gets populated only when a volumes search is performed. This contains a shorter version of the
+     * description.
+     * Refer to https://developers.google.com/books/docs/v1/using#PerformingSearch
+     *
+     * @var string
+     * @Annotations\JsonProperty("searchInfo", type="array")
+     */
+    protected $search_info;
+
+    /**
      * @return string
      */
     public function getId()
@@ -182,6 +192,26 @@ class Volume implements EntityInterface
     public function setSaleInfo($sale_info)
     {
         $this->sale_info = $sale_info;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSearchInfo()
+    {
+        return $this->search_info;
+    }
+
+    /**
+     * @param array $search_info
+     *
+     * @return Volume
+     */
+    public function setSearchInfo(array $search_info)
+    {
+        $this->search_info = implode($search_info);
 
         return $this;
     }

@@ -1,9 +1,10 @@
 <?php
 
-namespace tests\Nerdstorm\GoogleBooks\Service;
+namespace tests\Nerdstorm\GoogleBooks\Annotations\Mapper;
 
 use Nerdstorm\GoogleBooks\Annotations\Mapper\AnnotationMapper;
 use Nerdstorm\GoogleBooks\Entity\BookPrice;
+use Nerdstorm\GoogleBooks\Entity\Volume;
 use Nerdstorm\GoogleBooks\Entity\Volumes;
 
 class AnnotationMapperTest extends \PHPUnit_Framework_TestCase
@@ -98,31 +99,38 @@ class AnnotationMapperTest extends \PHPUnit_Framework_TestCase
         /** @var AnnotationMapper mapper */
         $this->mapper = new AnnotationMapper();
 
+        // Change one property for the second book volume
+        $book_volume_2 = str_replace('2kjxBQAAQBAJ', 'm22sBwAAQBAJ', $this->book_volume);
+
         $this->book_volumes = <<<JSON
     {
        "kind": "books#volumes",
        "totalItems": 112,
        "items": [
-           {$this->book_volume}
+           {$this->book_volume},
+           {$book_volume_2}
        ]
     }
 JSON;
 
     }
 
-    public function testVolumeEntityMapping()
+    public function testVolumeEntityMapping(array $json_obj = null, Volume $volume = null)
     {
-        $json_obj = json_decode($this->book_volume, true);
-        $object   = $this->mapper->resolveEntity($json_obj['kind']);
-        unset($json_obj['kind']);
+        if (null == $json_obj) {
+            $json_obj = json_decode($this->book_volume, true);
+        }
 
-        // Get the mapped volume object
-        $volume = $this->mapper->map($object, $json_obj);
+        if (null == $volume) {
+            $volume = $this->mapper->resolveEntity($json_obj);
+        }
+
+        unset($json_obj['kind']);
 
         foreach ($json_obj as $key => $value) {
             $actual = call_user_func([$volume, 'get' . ucfirst($key)]);
 
-            if (is_array($json_obj[$key])) {
+            if (is_array($value)) {
                 continue;
             }
 
@@ -133,10 +141,7 @@ JSON;
     public function testVolumeInfoEntityMapping()
     {
         $json_obj = json_decode($this->book_volume, true);
-        $object   = $this->mapper->resolveEntity($json_obj['kind']);
-
-        // Get the mapped volume object
-        $volume = $this->mapper->map($object, $json_obj);
+        $volume   = $this->mapper->resolveEntity($json_obj);
 
         foreach ($json_obj['volumeInfo'] as $key => $value) {
             if (!is_callable([$volume->getVolumeInfo(), 'get' . ucfirst($key)])) {
@@ -175,10 +180,7 @@ JSON;
     public function testSaleInfoEntityMapping()
     {
         $json_obj = json_decode($this->book_volume, true);
-        $object   = $this->mapper->resolveEntity($json_obj['kind']);
-
-        // Get the mapped volume object
-        $volume = $this->mapper->map($object, $json_obj);
+        $volume   = $this->mapper->resolveEntity($json_obj);
 
         foreach ($json_obj['saleInfo'] as $key => $value) {
             if (!is_callable([$volume->getSaleInfo(), 'get' . ucfirst($key)])) {
@@ -203,11 +205,8 @@ JSON;
         $json_obj = json_decode($this->book_volume, true);
 
         /** @var Volumes $object */
-        $object      = $this->mapper->resolveEntity($json_obj['kind']);
+        $volume      = $this->mapper->resolveEntity($json_obj);
         $access_info = $json_obj['accessInfo'];
-
-        // Get the mapped volume object
-        $volume = $this->mapper->map($object, $json_obj);
 
         foreach ($access_info as $key => $value) {
             if (!is_callable([$volume->getAccessInfo(), 'get' . ucfirst($key)])) {
@@ -224,16 +223,34 @@ JSON;
         $json_obj = json_decode($this->book_volumes, true);
 
         /** @var Volumes $object */
-        $object = $this->mapper->resolveEntity($json_obj['kind']);
+        $volumes = $this->mapper->resolveEntity($json_obj);
         unset($json_obj['kind']);
 
-        // Get the mapped volume object
-        $volumes = $this->mapper->map($object, $json_obj);
+        // Retrieve Volume objects from Volumes returned
+        $items = $volumes->getItems();
 
-        foreach ($json_obj as $key => $value) {
+        foreach ($json_obj as $key => $json_value) {
             $actual = call_user_func([$volumes, 'get' . ucfirst($key)]);
 
             if (is_array($json_obj[$key])) {
+                if ('items' == $key) {
+
+                    // Validate individual volume objects
+                    foreach ($json_value as $k => $json_volume) {
+                        $volume = $items[$k];
+                        unset($json_volume['kind']);
+
+                        foreach ($json_volume as $key => $value) {
+                            if (is_array($value)) {
+                                continue 2;
+                            }
+
+                            $volume_property_value = call_user_func([$volume, 'get' . ucfirst($key)]);
+                            $this->assertEquals($value, $volume_property_value);
+                        }
+                    }
+                }
+
                 continue;
             }
 

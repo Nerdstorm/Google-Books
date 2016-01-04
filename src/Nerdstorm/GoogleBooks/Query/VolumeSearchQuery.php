@@ -45,7 +45,7 @@ class VolumeSearchQuery implements QueryInterface
     /**
      * @param string $query build an object with a basic search query
      */
-    public function __construct($query)
+    public function __construct($query = '')
     {
         $this->setQuery($query);
     }
@@ -53,7 +53,7 @@ class VolumeSearchQuery implements QueryInterface
     /**
      * @param string $query
      *
-     * @return FullTextQuery
+     * @return VolumeSearchQuery
      */
     public function setQuery($query)
     {
@@ -65,7 +65,7 @@ class VolumeSearchQuery implements QueryInterface
     /**
      * @param string $author_name
      *
-     * @return FullTextQuery
+     * @return VolumeSearchQuery
      */
     public function setAuthorName($author_name)
     {
@@ -77,7 +77,7 @@ class VolumeSearchQuery implements QueryInterface
     /**
      * @param string $title
      *
-     * @return FullTextQuery
+     * @return VolumeSearchQuery
      */
     public function setTitle($title)
     {
@@ -89,7 +89,7 @@ class VolumeSearchQuery implements QueryInterface
     /**
      * @param string $isbn
      *
-     * @return FullTextQuery
+     * @return VolumeSearchQuery
      */
     public function setIsbn($isbn)
     {
@@ -101,7 +101,7 @@ class VolumeSearchQuery implements QueryInterface
     /**
      * @param string $oclc
      *
-     * @return FullTextQuery
+     * @return VolumeSearchQuery
      */
     public function setOclc($oclc)
     {
@@ -113,7 +113,7 @@ class VolumeSearchQuery implements QueryInterface
     /**
      * @param string $subject
      *
-     * @return FullTextQuery
+     * @return VolumeSearchQuery
      */
     public function setSubject($subject)
     {
@@ -125,7 +125,7 @@ class VolumeSearchQuery implements QueryInterface
     /**
      * @param string $publisher
      *
-     * @return FullTextQuery
+     * @return VolumeSearchQuery
      */
     public function setPublisher($publisher)
     {
@@ -136,17 +136,21 @@ class VolumeSearchQuery implements QueryInterface
 
     public function __toString()
     {
-        $query = '';
-
-        if ($this->query) {
-            $query .= $this->query;
-        }
+        $query = $this->query;
 
         if ($this->title) {
-            $query .= ' intitle:';
+            $query .= '+intitle:' . $this->title;
         }
 
-        return urlencode($query);;
+        if ($this->author_name) {
+            $query .= '+inauthor:' . $this->author_name;
+        }
+
+        if (empty($this->query)) {
+            $query = substr($query, 1);
+        }
+
+        return $query;
     }
 
 }

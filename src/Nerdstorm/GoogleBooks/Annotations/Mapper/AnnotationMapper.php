@@ -6,6 +6,7 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Nerdstorm\GoogleBooks\Annotations\Definition\JsonProperty;
 use Nerdstorm\GoogleBooks\Entity as Entity;
+use Nerdstorm\GoogleBooks\Exception\InvalidJsonException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
@@ -89,7 +90,7 @@ class AnnotationMapper
      *
      * @return Entity\EntityInterface
      */
-    public function map(Entity\EntityInterface $object, $data_tree)
+    protected function map(Entity\EntityInterface $object, $data_tree)
     {
         $reflection = new \ReflectionObject($object);
 
@@ -125,62 +126,64 @@ class AnnotationMapper
 
                     // Recall the function for the child object
                     $this->map($child_object, $sub_tree);
-                    continue 2;
                     break;
 
                 case JsonProperty::TYPE_OBJECTARRAY:
                     $object_array = [];
                     $class_name   = $annotation->getClassName();
                     $child_object = new $class_name();
-                    $sub_tree = $this->accessor->getValue($data_tree, "[$tree_property_name]");
+                    $sub_trees = $this->accessor->getValue($data_tree, "[$tree_property_name]");
 
-                    // Recall the function for the child object
-                    foreach ($sub_tree as $child_sub_tree) {
-                        $object_array[] = $this->map($child_object, $child_sub_tree);
+                    // Recall the map function to instantiate child objects
+                    foreach ($sub_trees as $k => $sub_tree) {
+                        $object_array[$k] = clone $this->map($child_object, $sub_tree);
                     }
 
                     $this->accessor->setValue($object, $class_property_name, $object_array);
-                    continue 2;
                     break;
 
                 case JsonProperty::TYPE_ENUM:
                     $class_name = $annotation->getClassName();
                     $value      = $class_name::memberByValue($data_tree[$tree_property_name]);
                     $this->accessor->setValue($object, $class_property_name, $value);
-                    continue 2;
                     break;
 
                 case JsonProperty::TYPE_ARRAY:
                     $sub_tree = $this->accessor->getValue($data_tree, "[$tree_property_name]");
                     $this->accessor->setValue($object, $class_property_name, $sub_tree);
-                    continue 2;
                     break;
 
                 case JsonProperty::TYPE_DATETIME:
-                    $datetime_string = $this->accessor->getValue($data_tree, "[$tree_property_name]");
-                    $datetime        = new \DateTime($datetime_string);
+                    $datetime_string = preg_replace(
+                        '/[^0-9\-]/',
+                        '',
+                        $this->accessor->getValue($data_tree, "[$tree_property_name]")
+                    );
+
+                    // Try if the date time is parse-able if not set to null
+                    try {
+                        $datetime = new \DateTime($datetime_string);
+                    } catch (\Exception $e) {
+                        $datetime = null;
+                    }
+
                     $this->accessor->setValue($object, $class_property_name, $datetime);
-                    continue 2;
                     break;
 
                 case JsonProperty::TYPE_STRING:
                     $this->accessor->setValue($object, $class_property_name, (string) $data_tree[$tree_property_name]);
-                    continue 2;
                     break;
 
                 case JsonProperty::TYPE_BOOL:
                     $this->accessor->setValue($object, $class_property_name, (bool) $data_tree[$tree_property_name]);
-                    continue 2;
                     break;
 
                 case JsonProperty::TYPE_INT:
                     $this->accessor->setValue($object, $class_property_name, (int) $data_tree[$tree_property_name]);
-                    continue 2;
                     break;
 
                 case JsonProperty::TYPE_FLOAT:
                     $this->accessor->setValue($object, $class_property_name, (float) $data_tree[$tree_property_name]);
-                    continue 2;
                     break;
             }
         }
@@ -189,22 +192,23 @@ class AnnotationMapper
     }
 
     /**
-     * @param string $kind
+     * @param array $json_data
      *
-     * @return false|mixed
+     * @return Entity\EntityInterface
+     * @throws InvalidJsonException
      */
-    public function resolveEntity($kind)
+    public function resolveEntity(array $json_data)
     {
-        if (!$kind) {
-            return false;
+        if (empty($json_data['kind'])) {
+            throw new InvalidJsonException();
         }
 
+        $kind = $json_data['kind'];
         if (!isset($this->entity_mappings[$kind])) {
-            throw new \RuntimeException('JSON object kind ' . $kind . ' not defined within entity annotations');
+            throw new \RuntimeException('JSON object kind "' . $kind . '" not defined within entity annotations');
         }
 
         $class_name = $this->entity_mappings[$kind];
-
-        return new $class_name();
+        return $this->map(new $class_name(), $json_data);
     }
 }
