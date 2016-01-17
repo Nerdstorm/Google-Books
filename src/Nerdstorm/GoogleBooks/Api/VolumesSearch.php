@@ -51,6 +51,8 @@ class VolumesSearch extends AbstractSearchBase
      *                                            "lite" - Includes a subset of fields in volumeInfo and accessInfo.
      *
      * @return Volumes
+     * @throws ArgumentOutOfBoundsException
+     * @throws UsageExceededException
      */
     public function volumesList(QueryInterface $q, $download = false, VolumeFilterEnum $filter = null,
         $lang_restrict = null, $start_index = 0, $max_results = self::MAX_RESULTS, OrderByEnum $order_by = null,

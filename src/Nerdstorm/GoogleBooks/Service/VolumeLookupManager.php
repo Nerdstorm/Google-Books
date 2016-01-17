@@ -39,6 +39,7 @@ class VolumeLookupManager
      * @param     $title
      * @param int $start
      * @param int $count Default: VolumesSearch::MAX_RESULTS
+     *
      * @return Volumes
      */
     public function lookupByTitle($title, $start = 0, $count = VolumesSearch::MAX_RESULTS)
@@ -81,7 +82,7 @@ class VolumeLookupManager
         } elseif (count($volumes->getItems()) >= $count) {
             $volumes
                 ->setItems(array_slice($volumes->getItems(), 0, $count))
-                ->setTotalItems($count)
+                ->setTotalItems(count($volumes->getItems()))
             ;
 
             return $volumes;
@@ -103,7 +104,7 @@ class VolumeLookupManager
         if (count($_volumes->getItems()) < VolumesSearch::MAX_RESULTS) {
             $volumes
                 ->setItems(array_slice($volumes->getItems(), 0, $count))
-                ->setTotalItems($count)
+                ->setTotalItems(count($volumes->getItems()))
             ;
 
             return $volumes;
@@ -172,10 +173,7 @@ class VolumeLookupManager
     /**
      * Find a volume by an ISBN.
      *
-     * @param     $isbn
-     * @param int $start
-     * @param int $count
-     *
+     * @param string $isbn
      * @return Volume|null
      */
     public function findByISBN($isbn)
@@ -185,10 +183,8 @@ class VolumeLookupManager
         $query->setIsbn($isbn);
 
         $volumes = $this->lookup($query);
-
         if ($volumes->getTotalItems()) {
-            $volumes = $volumes->getItems();
-            return reset($volumes);
+            return $volumes->getItems()[0];
         }
 
         return null;

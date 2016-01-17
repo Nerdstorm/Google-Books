@@ -140,4 +140,16 @@ class VolumeLookupManagerTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    public function testFindByISBN()
+    {
+        // Retrieve volume using the lookup manager
+        $volume = $this->volume_lookup_manager->findByISBN('978-1111534158');
+        $this->assertNotNull($volume);
+        $this->assertEquals(
+            'Systems Analysis and Design in a Changing World',
+            $volume->getVolumeInfo()->getTitle()
+        );
+        $this->assertArraySubset(['John Satzinger'], $volume->getVolumeInfo()->getAuthors());
+    }
+
 }
