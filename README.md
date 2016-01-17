@@ -16,19 +16,19 @@ $lookup_manager = new VolumeLookupManager($volume_search_api);
 
 ## Examples
 
-### Lookup `Volumes` using the volume title
+#### Lookup `Volumes` using the volume title
 ```
 $volumes = $lookup_manager->lookupByTitle('Systems Analysis and Design');
 $volumes->getItems();
 ```
 
-### Lookup `Volumes` by the author name
+#### Lookup `Volumes` by the author name
 ```
 $volumes = $lookup_manager->lookupByAuthor('John Satzinger');
 $volumes->getItems();
 ```
 
-### Find a `Volume` by volume ISBN
+#### Find a `Volume` by volume ISBN
 ```
 $volume = $lookup_manager->findByISBN('978-1111534158');
 ```
