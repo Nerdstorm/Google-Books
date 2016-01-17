@@ -146,6 +146,10 @@ class VolumeSearchQuery implements QueryInterface
             $query .= '+inauthor:' . $this->author_name;
         }
 
+        if ($this->isbn) {
+            $query .= '+isbn:' . preg_replace('/[^0-9]/', '',$this->isbn);
+        }
+
         if (empty($this->query)) {
             $query = substr($query, 1);
         }
