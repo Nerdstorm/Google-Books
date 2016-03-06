@@ -3,6 +3,7 @@
 namespace Nerdstorm\GoogleBooks\Entity;
 
 use Nerdstorm\GoogleBooks\Annotations\Definition as Annotations;
+use Nerdstorm\GoogleBooks\Enum\SaleabilityEnum;
 
 /**
  * Class SaleInfo
@@ -210,5 +211,4 @@ class SaleInfo implements EntityInterface
 
         return $this;
     }
-
 }

@@ -4,6 +4,7 @@ namespace Nerdstorm\GoogleBooks\Entity;
 
 use Nerdstorm\GoogleBooks\Annotations\Definition as Annotations;
 use Nerdstorm\GoogleBooks\Enum\AccessViewStatusEnum;
+use Nerdstorm\GoogleBooks\Enum\ViewabilityEnum;
 
 /**
  * Class AccessInfo
